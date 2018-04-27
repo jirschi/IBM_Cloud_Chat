@@ -1,5 +1,5 @@
 ---
 applications:
-- name: friendly-engelbart
-memory: 512M
-instances: 1
+- name: mystifying-jang
+memory: 128M
+host: mystifying-jang
