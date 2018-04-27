@@ -1,0 +1,5 @@
+---
+applications:
+- name: friendly-engelbart
+memory: 512M
+instances: 1

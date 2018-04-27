@@ -1,0 +1,70 @@
+﻿<!--Tom Maier, 751605; Jerg Bengel, 752685-->
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <title>Chatroom/Login</title>
+
+    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=11">
+
+    <link rel="stylesheet" href="Common/bootstrap-4.0.0-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/stylesheet.css">
+
+    <script src="Common/bootstrap-4.0.0-dist/js/bootstrap.min.js"></script>
+</head>
+
+
+<body>
+
+    <div class="container-fluid">
+        <!-- HEADER -->
+        <div class="pager-header fixed-top">
+            <div class="row justify-content-center">
+                <div class="col-md-2">
+                </div>
+                <div class="col-md-3">
+                </div>
+                <div class="col-md-2">
+                    <h1 class="display-4">Chatroom</h1>
+                </div>
+                <div class="col-md-5">
+                </div>
+            </div>
+        </div>
+
+        <!-- LOGIN -->
+        <div id="login" class="row justify-content-center">
+            <div class="col-md-4">
+            </div>
+            <div id="dataBox" class="col-xs-4 col-sm-4 col-md-4">
+                <form class="form" role="form" action="/login" method="post">
+                    <div class="row">
+                        <div class="col-xs-12 col-md-12">
+                            <input class="form-control" name="username" placeholder="Nickname" type="text" maxlength="15" required />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <input class="form-control" type="password" name="password" placeholder="Passwort" maxlength="15" required />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <input class="btn btn-lg btn-primary btn-block" type="submit" value="Login" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-8">
+                        </div>
+                        <div class="col-md-4">
+                            <small class="text-muted"><a href="register">Noch keinen Accout?</a></small>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-4">
+            </div>
+        </div>
+    </div>
+</body>
+</html>

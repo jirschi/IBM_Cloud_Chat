@@ -1,0 +1,124 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">14.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <Name>Chatroom</Name>
+    <RootNamespace>Chatroom</RootNamespace>
+    <LastActiveSolutionConfig>Debug|Any CPU</LastActiveSolutionConfig>
+    <DebuggerPort>5858</DebuggerPort>
+    <LaunchUrl>localhost:5858</LaunchUrl>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>a170e430-0d77-400d-b223-b73baedb90c7</ProjectGuid>
+    <ProjectHome>.</ProjectHome>
+    <StartupFile>server.js</StartupFile>
+    <SearchPath>
+    </SearchPath>
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <ProjectTypeGuids>{3AF33F2E-1136-4D97-BBB7-1795711AC8B8};{349c5851-65df-11da-9384-00065b846f21};{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}</ProjectTypeGuids>
+    <NodejsPort>1337</NodejsPort>
+    <StartWebBrowser>True</StartWebBrowser>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="database.js" />
+    <Compile Include="model\user.js" />
+    <Compile Include="public\Common\bootstrap-4.0.0-dist\js\bootstrap.bundle.js" />
+    <Compile Include="public\Common\bootstrap-4.0.0-dist\js\bootstrap.bundle.min.js" />
+    <Compile Include="public\Common\bootstrap-4.0.0-dist\js\bootstrap.js" />
+    <Compile Include="public\Common\bootstrap-4.0.0-dist\js\bootstrap.min.js" />
+    <Compile Include="public\js\chat.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="server.js" />
+    <Content Include="package.json" />
+    <Content Include="public\Common\bootstrap-4.0.0-dist\css\bootstrap-grid.css" />
+    <Content Include="public\Common\bootstrap-4.0.0-dist\css\bootstrap-grid.css.map" />
+    <Content Include="public\Common\bootstrap-4.0.0-dist\css\bootstrap-grid.min.css" />
+    <Content Include="public\Common\bootstrap-4.0.0-dist\css\bootstrap-grid.min.css.map" />
+    <Content Include="public\Common\bootstrap-4.0.0-dist\css\bootstrap-reboot.css" />
+    <Content Include="public\Common\bootstrap-4.0.0-dist\css\bootstrap-reboot.css.map" />
+    <Content Include="public\Common\bootstrap-4.0.0-dist\css\bootstrap-reboot.min.css" />
+    <Content Include="public\Common\bootstrap-4.0.0-dist\css\bootstrap-reboot.min.css.map" />
+    <Content Include="public\Common\bootstrap-4.0.0-dist\css\bootstrap.css" />
+    <Content Include="public\Common\bootstrap-4.0.0-dist\css\bootstrap.css.map" />
+    <Content Include="public\Common\bootstrap-4.0.0-dist\css\bootstrap.min.css" />
+    <Content Include="public\Common\bootstrap-4.0.0-dist\css\bootstrap.min.css.map" />
+    <Content Include="public\Common\bootstrap-4.0.0-dist\js\bootstrap.bundle.js.map" />
+    <Content Include="public\Common\bootstrap-4.0.0-dist\js\bootstrap.bundle.min.js.map" />
+    <Content Include="public\Common\bootstrap-4.0.0-dist\js\bootstrap.js.map" />
+    <Content Include="public\Common\bootstrap-4.0.0-dist\js\bootstrap.min.js.map" />
+    <Content Include="public\Common\img\chatDummy.jpg" />
+    <Content Include="public\css\stylesheet.css" />
+    <Content Include="README.md" />
+    <Content Include="view\index.ejs" />
+    <Content Include="view\login.html" />
+    <Content Include="view\error.html">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="view\register.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="model\" />
+    <Folder Include="public\" />
+    <Folder Include="public\Common\" />
+    <Folder Include="public\Common\bootstrap-4.0.0-dist\" />
+    <Folder Include="public\Common\bootstrap-4.0.0-dist\css\" />
+    <Folder Include="public\Common\bootstrap-4.0.0-dist\js\" />
+    <Folder Include="public\Common\img\" />
+    <Folder Include="public\css\" />
+    <Folder Include="public\js\" />
+    <Folder Include="view\" />
+  </ItemGroup>
+  <!-- Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them. -->
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="False" />
+  <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsTools.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>0</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:48022/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>True</UseCustomServer>
+          <CustomServerUrl>http://localhost:1337</CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}" User="">
+        <WebProjectProperties>
+          <StartPageUrl>
+          </StartPageUrl>
+          <StartAction>CurrentPage</StartAction>
+          <AspNetDebugging>True</AspNetDebugging>
+          <SilverlightDebugging>False</SilverlightDebugging>
+          <NativeDebugging>False</NativeDebugging>
+          <SQLDebugging>False</SQLDebugging>
+          <ExternalProgram>
+          </ExternalProgram>
+          <StartExternalURL>
+          </StartExternalURL>
+          <StartCmdLineArguments>
+          </StartCmdLineArguments>
+          <StartWorkingDirectory>
+          </StartWorkingDirectory>
+          <EnableENC>False</EnableENC>
+          <AlwaysStartWebServerOnDebug>False</AlwaysStartWebServerOnDebug>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

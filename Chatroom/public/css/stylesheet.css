@@ -1,0 +1,149 @@
+/*Tom Maier, 751605; Jerg Bengel, 752685*/
+input[type=submit] {
+    background-color: #1900fc;
+    color: white;
+    font-weight: bold;
+    transition-duration: 0.2s;
+    -webkit-transition-duration: 0.2s;
+    border: none;
+    min-width: 80px;
+}
+
+    input[type=submit]:hover {
+        background-color: #1878ff;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    input[type=submit]:disabled {
+        background-color: #8e8e8e;
+    }
+
+h2 {
+    display: block;
+    font-size: 1.17em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    margin-left: 0;
+    margin-right: 0;
+    font-weight: bold;
+}
+
+.container-fluid {
+    margin-top: 200px;
+}
+
+.form-inline > * {
+    margin-right: 30px;
+}
+
+.form-control {
+    margin-bottom: 10px;
+}
+
+.pager-header {
+    padding-top: 20px;
+    z-index: 100;
+    background-color: white;
+    border-bottom: 1px solid #ccc;
+}
+
+.user-header {
+    z-index: 100;
+    background-color: white;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 10px;
+}
+
+.chatBox {
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12), 0 3px 1px -2px rgba(0,0,0,0.2);
+    position: relative;
+    max-height: 600px;
+    overflow-y: hidden;
+}
+
+.userOnlineList {
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 1px 5px 0 rgba(0,0,0,0.12), 0 3px 1px -2px rgba(0,0,0,0.2);
+    position: relative;
+    max-height: 600px;
+    overflow-y: scroll;
+    padding: 5%;
+    overflow-x: hidden;
+}
+
+.chatHistory {
+    height: 400px;
+    padding: 2% 0;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.msg {
+    background-color: lightgrey;
+    padding: 2px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-radius: 5px;
+    width: fit-content;
+    margin-bottom: 5px;
+}
+
+.msg-response {
+    background-color: #1900fc;
+    color: white;
+    padding: 2px;
+    padding-bottom: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-radius: 5px;
+    width: fit-content;
+    float: right;
+    margin-bottom: 5px;
+}
+
+.clearfix {
+    clear: both;
+}
+
+.formPos {
+    padding: 2%;
+    border-top: 1px solid #ccc;
+}
+
+.response {
+    text-align: right;
+}
+
+.message {
+    padding: 2%;
+}
+
+.nameInList {
+    padding-top: 10px;
+}
+
+#dataBox {
+    background-color: #e0e0e0;
+    padding: 30px 20px 30px 20px;
+    border-radius: 20px;
+}
+
+#login {
+    margin-top: 20% !important;
+}
+
+#result {
+    margin-top: 20px;
+}
+
+#button-file {
+    background-color: #1900fc;
+    color: white;
+    font-weight: bold;
+    transition-duration: 0.2s;
+    -webkit-transition-duration: 0.2s;
+    border: none;
+    min-width: 80px;
+}
