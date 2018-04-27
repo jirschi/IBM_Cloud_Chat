@@ -1,6 +1,8 @@
 //Tom Maier, 751605; Jerg Bengel, 752685
 var express = require("express");
 var app = express();
+//var port = process.env.PORT || process.env.VCAP_APP_PORT || 3000;
+var port = process.env.VCAP_APP_PORT || 3000;
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var bodyParser = require('body-parser');
@@ -14,7 +16,7 @@ var fs = require('fs');
 var userSocketList = {};
 var users = [];
 
-let port = process.env.PORT || process.env.VCAP_APP_PORT || 3000;
+
 
 app.use(express.static("public"));
 app.set("view engine", "ejs");
@@ -274,5 +276,5 @@ io.on('connection', function (socket) {
 });
 
 http.listen(port, function () {
-    console.log('listening on *:3000');
+    console.log(port);
 });
