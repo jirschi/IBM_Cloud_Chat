@@ -1,8 +1,8 @@
 //Tom Maier, 751605; Jerg Bengel, 752685
 var express = require("express");
 var app = express();
-//var port = process.env.PORT || process.env.VCAP_APP_PORT || 3000;
-var port = 3000;
+var port = process.env.PORT || process.env.VCAP_APP_PORT || 3000;
+//var port = 3000;
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var bodyParser = require('body-parser');
