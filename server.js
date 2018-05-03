@@ -8,6 +8,7 @@ var io = require('socket.io')(http);
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var session = require('express-session');
+var request = require('request');
 var MongoStore = require('connect-mongo')(session);
 var passport = require('passport');
 var local = require('passport-local');
@@ -267,7 +268,19 @@ io.on('connection', function (socket) {
         } else {
             //Send regular msg
             if (msg.length > 0 || data.file !== null) {
-                io.emit('chat message', data);
+                request.post(
+                    {
+                        method: 'POST',
+                        url: 'xenodochial-nightingale.eu-de.mybluemix.net/tone',
+                        json: {
+                            "texts": [msg]
+                        }
+                    }
+                    , function (error, response, body) {
+                        data.msg = body.mood;
+                        io.emit('chat message', data);
+                    }
+                )
             } else {
                 socket.emit('error message', 'FEHLER: Bitte gib eine Nachricht ein!');
             }
