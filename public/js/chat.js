@@ -79,14 +79,14 @@ $(function () {
     socket.on('chat message', function (msg) {
         if (msg.from === username) {
             if (msg.message.length > 0) {
-                addPost(msg.message, nameLink(msg.from), msg.timestamp, 'msg', '');
+                addPost(msg.message, nameLink(msg.from)+": "+msg.mood, msg.timestamp, 'msg', '');
             }
             if (msg.file != null) {
                 addPost('<a target ="_blank" href="' + msg.file + '"><object data="' + msg.file + '"></object></a>', nameLink(msg.from), msg.timestamp, 'msg', '');
             }
         } else {
             if (msg.message.length > 0) {
-                addPost(msg.message, nameLink(msg.from), msg.timestamp, 'msg-response', 'response');
+                addPost(msg.message, nameLink(msg.from) + ": " + msg.mood, msg.timestamp, 'msg-response', 'response');
             }
             if (msg.file != null) {
                 addPost('<a target ="_blank" href="' + msg.file + '"><object data="' + msg.file + '"></object></a>', nameLink(msg.from), msg.timestamp, 'msg-response', 'response');

@@ -1,11 +1,12 @@
 //Tom Maier, 751605; Jerg Bengel, 752685
 var express = require("express");
 var app = express();
-var port = process.env.PORT || process.env.VCAP_APP_PORT || 3000;
-//var port = process.env.VCAP_APP_PORT || 3000;
+//var port = process.env.PORT || process.env.VCAP_APP_PORT || 3000;
+var port = 3000;
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var bodyParser = require('body-parser');
+var request = require('request');
 var mongoose = require('mongoose');
 var session = require('express-session');
 var MongoStore = require('connect-mongo')(session);
@@ -267,7 +268,24 @@ io.on('connection', function (socket) {
         } else {
             //Send regular msg
             if (msg.length > 0 || data.file !== null) {
-                io.emit('chat message', data);
+                request.post(
+                    {
+                        method: 'POST',
+                        url: 'https://xenodochial-nightingale.eu-de.mybluemix.net/tone',
+                        json: {
+                            "texts": [msg]
+                        }
+                    }
+                    , function (error, response, body) {
+                        io.emit('chat message', {
+                            timestamp: data.timestamp,
+                            from: data.from,                            
+                            message: msg,
+                            file: data.file,
+                            mood: body.mood
+                        });
+                    }
+                )
             } else {
                 socket.emit('error message', 'FEHLER: Bitte gib eine Nachricht ein!');
             }
