@@ -13,11 +13,15 @@ var MongoStore = require('connect-mongo')(session);
 var passport = require('passport');
 var local = require('passport-local');
 var database = require('./database');
+var LanguageTranslatorV2 = require('watson-developer-cloud/language-translator/v2');
 var fs = require('fs');
 var userSocketList = {};
 var users = [];
 
-
+var languageTranslator = new LanguageTranslatorV2({
+    username: '{username}',
+    password: '{password}'
+});
 
 app.use(express.static("public"));
 app.set("view engine", "ejs");
@@ -279,13 +283,12 @@ io.on('connection', function (socket) {
                     , function (error, response, body) {
                         io.emit('chat message', {
                             timestamp: data.timestamp,
-                            from: data.from,                            
+                            from: data.from,
                             message: msg,
                             file: data.file,
                             mood: body.mood
                         });
-                    }
-                )
+                    });
             } else {
                 socket.emit('error message', 'FEHLER: Bitte gib eine Nachricht ein!');
             }

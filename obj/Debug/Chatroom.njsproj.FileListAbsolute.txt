@@ -1,0 +1,3 @@
+C:\Temp\Repos\IBM_Cloud_Chat\obj\Debug\Chatroom.njsprojAssemblyReference.cache
+C:\Temp\Repos\IBM_Cloud_Chat\obj\Debug\Chatroom.njsproj.CoreCompileInputs.cache
+C:\Temp\Repos\IBM_Cloud_Chat\bin\Microsoft.NodejsTools.WebRole.dll
