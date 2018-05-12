@@ -16,15 +16,15 @@ const connection = mysql.createConnection(
 
 
 //save user to database
-exports.createUser = function (username, password, image, callback) {
-    if (!username || !password) {
-        console.log('[DEBUG-SERVER] MySQL: Unable to INSERT because username or password are missing!');
+exports.createUser = function (username, password, image, language, callback) {
+    if (!username || !password || !language) {
+        console.log('[DEBUG-SERVER] MySQL: Unable to INSERT because username/password/language are missing!');
         callback(false);
     }
     var hash = bcrypt.hashSync(password, 10);
-
-    var sql = "INSERT INTO compose.Users (username, password, image) VALUES ?";
-    var values = [[username, hash, image]];
+  
+    var sql = "INSERT INTO compose.Users (username, password, image, language) VALUES ?";
+    var values = [[username, hash, image, language]];
 
     connection.query(sql, [values], function (err, result) {
         if (err) {
@@ -33,7 +33,7 @@ exports.createUser = function (username, password, image, callback) {
             callback(false);
         } else {
             callback(username);
-            console.log('[DEBUG-SERVER] MySQL: INSERT of user' + username + ' successful!');
+            console.log('[DEBUG-SERVER] MySQL: INSERT of user ' + username + ' successful!');
         }
     });
 };

@@ -84,10 +84,11 @@ app.get('/error', function (req, res) {
 });
 
 app.get('/chat', function (req, res) {
-    console.log('[SERVER] forwarding user: ' + req.session.passport.user + ' to chat');
-    if (req.session.passport.user !== null) {
+    console.log('[SERVER] forwarding user: ' + req.session.passport.user.user + ' to chat with language: ' + req.session.passport.user.language);
+    if (req.session.passport.user.user !== null && req.session.passport.user.language !== null) {
         res.render('index', {
-            username: req.session.passport.user
+            username: req.session.passport.user.user,
+            language: req.session.passport.user.language
         });
     } else {
         res.redirect('/');
@@ -108,12 +109,12 @@ app.post('/login', passport.authenticate('passport-local-login', {
 //Passport will maintain persistent login sessions
 
 passport.serializeUser(function (user, done) {
-    console.log("serializing " + user);
+    console.log("serializing " + user.user);
     done(null, user);
 });
 
 passport.deserializeUser(function (obj, done) {
-    console.log("deserializing " + obj);
+    console.log("deserializing " + obj.user);
     done(null, obj);
 });
 
@@ -138,9 +139,20 @@ passport.use('passport-local-register', new local({
                         done(null, false);
                     } else {
                         //Check if there is already a user with this name saved
-                        database.createUser(req.body.username, req.body.password, "", function (user) {
+                        var lang;
+                        if (req.body.language === "German") {
+                            lang = "de";
+                        } else if (req.body.language === "English") {
+                            lang = "en";
+                        } else if (req.body.language === "Hispanic") {
+                            lang = "es";
+                        } else if (req.body.language === "French") {
+                            lang = "fr";
+                        }
+
+                        database.createUser(req.body.username, req.body.password, req.body.file, lang, function (user) {
                             if (user) {
-                                done(null, user);
+                                done(null, { user: user, language: lang });
                                 console.log('[SERVER] Register of ' + req.body.username + ' successful!');
                             } else {
                                 done(null, false);

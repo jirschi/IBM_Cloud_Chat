@@ -3,8 +3,8 @@ $(function () {
     var socket = io.connect();
     var mediaFile = null;
     var user = {
-        "username": username//,
-        //"language": language
+        "username": username,
+        "language": language
     };
     socket.emit('send-nickname', user);
 
