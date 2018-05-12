@@ -1,15 +1,14 @@
 //Tom Maier, 751605; Jerg Bengel, 752685
 var express = require("express");
 var app = express();
-var port = process.env.PORT || process.env.VCAP_APP_PORT || 3000;
-//var port = 3000;
+//var port = process.env.PORT || process.env.VCAP_APP_PORT || 3000;
+var port = 3000;
 var http = require('http').Server(app);
-var io = require('socket.io')(http);
+var io = require('socket.io').listen(http);
 var bodyParser = require('body-parser');
 var request = require('request');
-var mongoose = require('mongoose');
 var session = require('express-session');
-var MongoStore = require('connect-mongo')(session);
+var MySQLStore = require('express-mysql-session')(session);
 var passport = require('passport');
 var local = require('passport-local');
 var database = require('./database');
@@ -17,6 +16,7 @@ var LanguageTranslatorV2 = require('watson-developer-cloud/language-translator/v
 var fs = require('fs');
 var userSocketList = {};
 var users = [];
+var mysql = require('mysql');
 
 var languageTranslator = new LanguageTranslatorV2({
     username: 'd8d339f0-f1e3-48d3-a769-f9a1fee0bccd',
@@ -24,37 +24,44 @@ var languageTranslator = new LanguageTranslatorV2({
     url: 'https://gateway-fra.watsonplatform.net/language-translator/api'
 });
 
+/*
+var key = fs.readFileSync('./bengelmaier_private.key');
+var cert = fs.readFileSync('./servercert.crt');
+*/
+
+
 app.use(express.static("public"));
 app.set("view engine", "ejs");
 app.set('views', __dirname + '/view');
+
+//mysql
+
+var options = {
+    host: 'sl-eu-fra-2-portal.4.dblayer.com',
+    port: 16713,
+    user: 'admin',
+    password: 'SVZBHTBXIYEOAZOV',
+    database: 'compose',
+    expiration: 86400000,
+    checkExpirationInterval: 900000
+};
+var connection = mysql.createConnection(options); // or mysql.createPool(options);
+var sessionStore = new MySQLStore({}/* session store options */, connection);
+
+app.use(session({
+    secret: 'SuperSecretPassword!',
+    store: sessionStore,
+    resave: false,
+    saveUninitialized: true
+}));
 
 //body parser
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-//MongoDB Connectoin
-mongoose.connect('mongodb://sa_reader:readerpwd2017!@ds046067.mlab.com:46067/cloudcomputing');
-var db = mongoose.connection;
-
 //Passport intialization
 app.use(passport.initialize());
 app.use(passport.session());
-
-//handle mongo error
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function () {
-    console.log('connected to mongodb successfully');
-});
-
-//use sessions for tracking logins
-app.use(session({
-    secret: 'SuperSecretPasword!',
-    resave: true,
-    saveUninitialized: false,
-    store: new MongoStore({
-        mongooseConnection: db
-    })
-}));
 
 //error handler define as the last app.use callback
 app.use(function (err, req, res, next) {
@@ -131,7 +138,7 @@ passport.use('passport-local-register', new local({
                         done(null, false);
                     } else {
                         //Check if there is already a user with this name saved
-                        database.createUser(req.body.username, req.body.password, function (user) {
+                        database.createUser(req.body.username, req.body.password, "", function (user) {
                             if (user) {
                                 done(null, user);
                                 console.log('[SERVER] Register of ' + req.body.username + ' successful!');
@@ -162,7 +169,7 @@ passport.use('passport-local-login', new local({
             }
             database.findUser(req.body.username, function (cb) {
                 if (!cb) {
-                    console.log('[SERVER] Unable to find user ' + req.body.username + '!');
+                    console.log('[SERVER] User ' + req.body.username + ' doesnt seem to exist!');
                     done(null, false);
                 } else {
                     //Check if there is already a user with this name saved
@@ -190,7 +197,6 @@ function isWhitespaceOrEmpty(text) {
 io.on('connection', function (socket) {
     socket.on('send-nickname', function (data) {
         socket.username = data.username;
-        //socket.language = data.language;
         if (users.indexOf(socket.username) < 0) {
             users.push(socket.username);
         }
@@ -238,10 +244,6 @@ io.on('connection', function (socket) {
     socket.on('chat message', function (data) {
         var d = new Date(new Date().getTime()).toLocaleTimeString();
         data.timestamp = d;
-
-        //var lang = "";
-        //if (data.language==="german")
-
         var msg = data.message.trim(); //remove white space
         if (msg.substr(0, 3) === '/w ') { //is the user whispering?
             msg = msg.substr(3); //substring /w
@@ -315,7 +317,7 @@ io.on('connection', function (socket) {
                                 }
                             }
                         );
-                        
+
                     }
                 )
             } else {
@@ -324,7 +326,13 @@ io.on('connection', function (socket) {
         }
     });
 });
+/*
+var httpsOptions = {
+    key: key,
+    cert: cert
+};
+*/
 
 http.listen(port, function () {
-    console.log(port);
+    console.log('listening on *:3000');
 });

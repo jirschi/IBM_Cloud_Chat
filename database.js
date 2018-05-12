@@ -1,61 +1,121 @@
 ﻿//Tom Maier, 751605; Jerg Bengel, 752685
-var mongoose = require('mongoose'),
-    UserSchema = require('./model/user');
 var bcrypt = require('bcrypt');
+var mysql = require('mysql');
+var fs = require('fs');
+
+const connection = mysql.createConnection(
+    {
+        host: 'sl-eu-fra-2-portal.4.dblayer.com',
+        port: 16713,
+        user: 'admin',
+        password: 'SVZBHTBXIYEOAZOV'//,
+        //ssl: {
+        //    ca: fs.readFileSync('./db_cert.crt')
+        //}
+    });
+
 
 //save user to database
-exports.createUser = function (username, password, callback) {
+exports.createUser = function (username, password, image, callback) {
     if (!username || !password) {
-        console.log('[DEBUG-SERVER] User: ' + username + ' missing username or password!');
+        console.log('[DEBUG-SERVER] MySQL: Unable to INSERT because username or password are missing!');
         callback(false);
     }
-
     var hash = bcrypt.hashSync(password, 10);
-    var newUser = new UserSchema({
-        username: username,
-        password: hash
-    });
 
-    newUser.save(function (err, artist) {
+    var sql = "INSERT INTO compose.Users (username, password, image) VALUES ?";
+    var values = [[username, hash, image]];
+
+    connection.query(sql, [values], function (err, result) {
         if (err) {
-            console.log('[DEBUG-SERVER] User: ' + username + ' unable to save to database!');
+            console.log('[DEBUG-SERVER] MySQL: ' + username + ' unable to save to database!');
+            console.log(err.message);
             callback(false);
         } else {
             callback(username);
-            console.log('[DEBUG-SERVER] User: ' + username + ' saved to database successfully!');
+            console.log('[DEBUG-SERVER] MySQL: INSERT of user' + username + ' successful!');
         }
     });
 };
 
+//find a user
 exports.findUser = function (username, callback) {
-    UserSchema.find({ username: username }, function (err, user) {
-        if (err)
-            callback(false);
+    if (!username) {
+        console.log('[DEBUG-SERVER] MySQL: Unable to QUERY because username is missing!');
+        callback(false);
+    }
+    var sql = "SELECT username FROM compose.Users WHERE username = '" + username + "'";
 
-        if (user.length > 0) {
-            callback(username);
-        } else {
+    connection.query(sql, function (err, result) {
+        if (err) {
+            console.log('[DEBUG-SERVER] MySQL: Error while trying to find user ' + username + '!');
+            console.log(err.message);
             callback(false);
+        } else {
+            if (result !== null && result.length > 0) {
+                //user exists
+                callback(result);
+            } else {
+                //user does not exist
+                callback(false);
+            }
         }
     });
 };
 
+//check if password supplied is right or wrong
 exports.findPasswordHashForUser = function (username, password, callback) {
-    UserSchema.findOne({ username: username }, function (err, user) {
-        if (err)
-            callback(false);
+    if (!username) {
+        console.log('[DEBUG-SERVER] MySQL: Unable to QUERY because username is missing!');
+        callback(false);
+    }
+    var sql = "SELECT password FROM compose.Users WHERE username = '" + username + "'";
 
-        if (user._doc.username.length > 0 && user._doc.password.length > 0) {
-            var passwordMatch = bcrypt.compare(password, user._doc.password).then(function (res) {
-                // the password is correct
-                if (res.valueOf()) {
-                    callback(user._doc.username);
-                } else {
-                    console.log('[DEBUG-SERVER] Password mismatch for user ' + user._doc.username);
-                }
-            });
-        } else {
+    connection.query(sql, function (err, result) {
+        if (err) {
+            console.log('[DEBUG-SERVER] MySQL: Error while trying to query password for user ' + username + '!');
+            console.log(err.message);
             callback(false);
+        } else {
+            if (result !== null && result.length > 0) {
+                //user exists
+                var passwordMatch = bcrypt.compare(password, result[0].password).then(function (res) {
+                    // the password is correct
+                    if (res.valueOf()) {
+                        callback(username);
+                    } else {
+                        console.log('[DEBUG-SERVER] MySQL: Password mismatch for user ' + username);
+                    }
+                });
+            } else {
+                console.log('[DEBUG-SERVER] MySQL: Error while trying to query password for user ' + username);
+                callback(false);
+            }
+        }
+    });
+};
+
+//find the image a user has
+exports.findImageForUser = function (username, callback) {
+    if (!username) {
+        console.log('[DEBUG-SERVER] MySQL: Unable to QUERY image because username is missing!');
+        callback(false);
+    }
+    var sql = "SELECT image FROM compose.Users WHERE username = '" + username + "'";
+
+    connection.query(sql, function (err, result) {
+        if (err) {
+            console.log('[DEBUG-SERVER] MySQL: Error while trying to find user ' + username + '!');
+            console.log(err.message);
+            callback(false);
+        } else {
+            if (result !== null && result.length > 0) {
+                //user exists
+                callback(result[0].image);
+            } else {
+                //user does not exist
+                callback(false);
+            }
         }
     });
 };
