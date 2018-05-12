@@ -13,11 +13,15 @@ var MongoStore = require('connect-mongo')(session);
 var passport = require('passport');
 var local = require('passport-local');
 var database = require('./database');
+var LanguageTranslatorV2 = require('watson-developer-cloud/language-translator/v2');
 var fs = require('fs');
 var userSocketList = {};
 var users = [];
 
-
+var languageTranslator = new LanguageTranslatorV2({
+    username: '{username}',
+    password: '{password}'
+});
 
 app.use(express.static("public"));
 app.set("view engine", "ejs");
