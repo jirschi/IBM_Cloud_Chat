@@ -258,19 +258,55 @@ io.on('connection', function (socket) {
                 }
                 if (username in userSocketList) {
                     //Send private-msg to sender and receiver
-                    io.to(userSocketList[username]).emit('private message', {
-                        timestamp: data.timestamp,
-                        from: data.from,
-                        message: msg,
-                        file: data.file
-                    });
-                    socket.emit('private message sender', {
-                        timestamp: data.timestamp,
-                        from: data.from,
-                        to: username,
-                        message: msg,
-                        file: data.file
-                    });
+
+                    request.post(
+                        {
+                            method: 'POST',
+                            url: 'https://xenodochial-nightingale.eu-de.mybluemix.net/tone',
+                            json: {
+                                "texts": [msg]
+                            }
+                        }
+                        , function (error, response, body) {
+
+                            var parameters = {
+                                text: msg,
+                                model_id: 'en-es'
+                            };
+
+                            languageTranslator.translate(
+                                parameters,
+                                function (error, response) {
+                                    if (error) {
+                                        console.log(error)
+                                    }
+                                    else {
+                                        msg = response.translations[0].translation;
+                                        console.log(msg);
+
+                                        io.to(userSocketList[username]).emit('private message', {
+                                            timestamp: data.timestamp,
+                                            from: data.from,
+                                            message: msg,
+                                            file: data.file,
+                                            mood: body.mood
+                                        });
+
+                                        socket.emit('private message sender', {
+                                            timestamp: data.timestamp,
+                                            from: data.from,
+                                            to: username,
+                                            message: msg,
+                                            file: data.file,
+                                            mood: body.mood
+                                        });
+                                    }
+                                }
+                            );
+
+                        }
+                    )
+
                 } else {
                     socket.emit('error message', 'FEHLER: Der User ist nicht verf&uuml;gbar!');
                 }

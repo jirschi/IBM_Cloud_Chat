@@ -84,14 +84,14 @@ $(function () {
                 addPost(msg.message, nameLink(msg.from)+": "+msg.mood, msg.timestamp, 'msg', '');
             }
             if (msg.file != null) {
-                addPost('<a target ="_blank" href="' + msg.file + '"><object data="' + msg.file + '"></object></a>', nameLink(msg.from), msg.timestamp, 'msg', '');
+                addPost('<a target ="_blank" href="' + msg.file + '"><object data="' + msg.file + '"></object></a>', nameLink(msg.from) + ": " + msg.mood, msg.timestamp, 'msg', '');
             }
         } else {
             if (msg.message.length > 0) {
                 addPost(msg.message, nameLink(msg.from) + ": " + msg.mood, msg.timestamp, 'msg-response', 'response');
             }
             if (msg.file != null) {
-                addPost('<a target ="_blank" href="' + msg.file + '"><object data="' + msg.file + '"></object></a>', nameLink(msg.from), msg.timestamp, 'msg-response', 'response');
+                addPost('<a target ="_blank" href="' + msg.file + '"><object data="' + msg.file + '"></object></a>', nameLink(msg.from) + ": " + msg.mood, msg.timestamp, 'msg-response', 'response');
             }
         }
     });
@@ -100,17 +100,17 @@ $(function () {
     socket.on('private message', function (msg) {
         if (msg.from === username) {
             if (msg.message.length > 0) {
-                addPost("Private message von " + msg.from + ": " + msg.message, nameLink(msg.from), msg.timestamp, 'msg', '');
+                addPost("Private message von " + msg.from + ": " + msg.message, nameLink(msg.from) + ": " + msg.mood, msg.timestamp, 'msg', '');
             }
             if (msg.file != null) {
-                addPost('Private message von ' + msg.from + ': <a target ="_blank" href="' + msg.file + '"><object data="' + msg.file + '"></object></a>', nameLink(msg.from), msg.timestamp, 'msg', '');
+                addPost('Private message von ' + msg.from + ': <a target ="_blank" href="' + msg.file + '"><object data="' + msg.file + '"></object></a>', nameLink(msg.from) + ": " + msg.mood, msg.timestamp, 'msg', '');
             }
         } else {
             if (msg.message.length > 0) {
-                addPost("Private message von " + msg.from + ": " + msg.message, nameLink(msg.from), msg.timestamp, 'msg-response', 'response');
+                addPost("Private message von " + msg.from + ": " + msg.message, nameLink(msg.from) + ": " + msg.mood, msg.timestamp, 'msg-response', 'response');
             }
             if (msg.file != null) {
-                addPost('Private message von ' + msg.from + ': <a target ="_blank" href="' + msg.file + '"><object data="' + msg.file + '"></object></a>', nameLink(msg.from), msg.timestamp, 'msg-response', 'response');
+                addPost('Private message von ' + msg.from + ': <a target ="_blank" href="' + msg.file + '"><object data="' + msg.file + '"></object></a>', nameLink(msg.from) + ": " + msg.mood, msg.timestamp, 'msg-response', 'response');
             }
         }
     });
@@ -119,10 +119,10 @@ $(function () {
     socket.on('private message sender', function (msg) {
         if (msg.to !== username) {
             if (msg.message.length > 0) {
-                addPost("Private message to - " + nameLink(msg.to) + ": " + msg.message, nameLink(msg.from), msg.timestamp, 'msg', '');
+                addPost("Private message to - " + nameLink(msg.to) + ": " + msg.message, nameLink(msg.to) + ": " + msg.mood, msg.timestamp, 'msg', '');
             }
             if (msg.file != null) {
-                addPost("Private message to - " + nameLink(msg.to) + '<a target ="_blank" href="' + msg.file + '"><object data="' + msg.file + '"></object></a>', nameLink(msg.from), msg.timestamp, 'msg', '');
+                addPost("Private message to - " + nameLink(msg.to) + '<a target ="_blank" href="' + msg.file + '"><object data="' + msg.file + '"></object></a>', nameLink(msg.to) + ": " + msg.mood, msg.timestamp, 'msg', '');
             }
         }
     });

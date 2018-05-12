@@ -7,10 +7,31 @@
     <meta http-equiv="X-UA-Compatible" content="IE=11">
     <link rel="stylesheet" href="common/bootstrap-4.0.0-dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="css/stylesheet.css">
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <script src="common/bootstrap-4.0.0-dist/js/bootstrap.min.js"></script>
-</head>
-<body>
     <script type="text/javascript">
+        var mediafile;
+
+        function init() {
+
+            $('#picture').before('<input type="button" id="button-file" class=" form-control btn btn-md btn-primary btn-block" value="Add File" onchange="checkIfMsgEx()"/> ');
+            $('#picture').hide();
+            $('body').on('click', '#button-file', function () {
+                $('#picture').trigger('click');
+            });
+
+            $('#picture').on('change', function (e) {
+                var file = e.originalEvent.target.files[0];
+                var reader = new FileReader();
+                reader.onload = function (evt) {
+                    mediaFile = evt.target.result;
+                    console.log('Prepared: ' + mediaFile);
+                };
+                reader.readAsDataURL(file);
+            });
+
+            
+        }
 
         function nospaces(t) {
 
@@ -24,6 +45,9 @@
 
         }
     </script>
+</head>
+<body onload="init()">
+    
     <div class="container-fluid">
         <!-- HEADER -->
         <div class="pager-header fixed-top">
@@ -57,13 +81,13 @@
                     </div>
                     <div class="row">
                         <div class='col-md-12'>
-                            <input class="form-control" type="file" name="file" accept="image/*" placeholder="Upload Picture"/>
+                            <input class="form-control" id="picture" type="file" name="file" accept="image/*" placeholder="Upload Picture"/>
                         </div>
                     </div>
                     <div class="row">
                         <div class='col-md-12'>
                             <label for="language">Sprache wählen:</label>
-                            <select class="form-control" id="language">
+                            <select class="form-control" name="language">
                                 <option>German</option>
                                 <option>English</option>
                                 <option>French</option>
