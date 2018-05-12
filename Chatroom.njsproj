@@ -42,6 +42,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="server.js" />
+    <Content Include="db_cert.crt" />
     <Content Include="package.json" />
     <Content Include="public\Common\bootstrap-4.0.0-dist\css\bootstrap-grid.css" />
     <Content Include="public\Common\bootstrap-4.0.0-dist\css\bootstrap-grid.css.map" />
