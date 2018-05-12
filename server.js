@@ -19,8 +19,9 @@ var userSocketList = {};
 var users = [];
 
 var languageTranslator = new LanguageTranslatorV2({
-    username: '{username}',
-    password: '{password}'
+    username: 'd8d339f0-f1e3-48d3-a769-f9a1fee0bccd',
+    password: 'dnnMTWUcNFW4',
+    url: 'https://gateway-fra.watsonplatform.net/language-translator/api'
 });
 
 app.use(express.static("public"));
@@ -152,7 +153,7 @@ passport.use('passport-local-login', new local({
 },
     function (req, username, password, done) {
         if (req.body.username || req.body.password) {
-            if (!isWhitespaceOrEmpty(req.body.username) || req.body.username.length > 15) {
+            if (isWhitespaceOrEmpty(req.body.username) || req.body.username.length > 15) {
                 console.log('username has whitespaces or is empty or exceeded the length of 15!');
                 done(null, false);
             } if (req.body.password.length > 15) {
@@ -189,6 +190,7 @@ function isWhitespaceOrEmpty(text) {
 io.on('connection', function (socket) {
     socket.on('send-nickname', function (data) {
         socket.username = data.username;
+        //socket.language = data.language;
         if (users.indexOf(socket.username) < 0) {
             users.push(socket.username);
         }
@@ -236,6 +238,10 @@ io.on('connection', function (socket) {
     socket.on('chat message', function (data) {
         var d = new Date(new Date().getTime()).toLocaleTimeString();
         data.timestamp = d;
+
+        //var lang = "";
+        //if (data.language==="german")
+
         var msg = data.message.trim(); //remove white space
         if (msg.substr(0, 3) === '/w ') { //is the user whispering?
             msg = msg.substr(3); //substring /w
@@ -272,6 +278,8 @@ io.on('connection', function (socket) {
         } else {
             //Send regular msg
             if (msg.length > 0 || data.file !== null) {
+
+
                 request.post(
                     {
                         method: 'POST',
@@ -281,13 +289,33 @@ io.on('connection', function (socket) {
                         }
                     }
                     , function (error, response, body) {
-                        io.emit('chat message', {
-                            timestamp: data.timestamp,
-                            from: data.from,                            
-                            message: msg,
-                            file: data.file,
-                            mood: body.mood
-                        });
+
+                        var parameters = {
+                            text: msg,
+                            model_id: 'en-es'
+                        };
+
+                        languageTranslator.translate(
+                            parameters,
+                            function (error, response) {
+                                if (error) {
+                                    console.log(error)
+                                }
+                                else {
+                                    msg = response.translations[0].translation;
+                                    console.log(msg);
+
+                                    io.emit('chat message', {
+                                        timestamp: data.timestamp,
+                                        from: data.from,
+                                        message: msg,
+                                        file: data.file,
+                                        mood: body.mood
+                                    });
+                                }
+                            }
+                        );
+                        
                     }
                 )
             } else {

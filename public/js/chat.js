@@ -3,7 +3,8 @@ $(function () {
     var socket = io.connect();
     var mediaFile = null;
     var user = {
-        "username": username
+        "username": username//,
+        //"language": language
     };
     socket.emit('send-nickname', user);
 
@@ -38,7 +39,8 @@ $(function () {
         var message = {
             "from": username,
             "message": m,
-            "file": mediaFile
+            "file": mediaFile//,
+            //"language": language
         };
         socket.emit('chat message', message);
         $('#m').val('');
