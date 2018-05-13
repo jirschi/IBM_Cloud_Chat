@@ -13,6 +13,8 @@ var passport = require('passport');
 var local = require('passport-local');
 var database = require('./database');
 var LanguageTranslatorV2 = require('watson-developer-cloud/language-translator/v2');
+var async = require('async');
+var asyncEachObject = require('async-each-object');
 var fs = require('fs');
 var userSocketList = {};
 var users = [];
@@ -379,61 +381,67 @@ io.on('connection', function (socket) {
                                         console.log(error)
                                     } else {
                                         var analysed_language = response.languages[0].language;
-                                        var username = "";
-                                        var sockettoemit = "";
+                                                                                
+                                        asyncEachObject(
+                                            userSocketList,
+                                            function iterator(value, key, nextEach) {
+                                                console.log(key, '=', value);
 
+                                                database.findLanguageForUser(key, function (language) {
 
-                                        for (var key in userSocketList) {
-                                            username_toAnalyze = key;
-                                            sockettoemit = userSocketList[key];
-                                            console.log(username_toAnalyze);
+                                                    console.log(key + " ;" + language)
 
-                                            database.findLanguageForUser(username_toAnalyze, function (language) {
+                                                    if (language) {
 
-                                                console.log(username_toAnalyze + " ;" + language)
+                                                        var setModelId = analysed_language + "-" + language;
 
-                                                if (language) {
+                                                        var parameters = {
+                                                            text: msg,
+                                                            model_id: setModelId
+                                                        };
 
-                                                    var setModelId = analysed_language + "-" + language;
+                                                        if (analysed_language !== language) {
+                                                            languageTranslator.translate(
+                                                                parameters,
+                                                                function (error, response) {
+                                                                    if (error) {
+                                                                        console.log(error);
+                                                                    }
+                                                                    else {
+                                                                        msg = response.translations[0].translation;
 
-                                                    var parameters = {
-                                                        text: msg,
-                                                        model_id: setModelId
-                                                    };
-
-                                                    if (analysed_language !== language) {
-                                                        languageTranslator.translate(
-                                                            parameters,
-                                                            function (error, response) {
-                                                                if (error) {
-                                                                    console.log(error);
+                                                                        io.to(value).emit('chat message', {
+                                                                            timestamp: data.timestamp,
+                                                                            from: data.from,
+                                                                            message: msg,
+                                                                            file: data.file,
+                                                                            mood: body.mood
+                                                                        });
+                                                                    }
                                                                 }
-                                                                else {
-                                                                    msg = response.translations[0].translation;
-
-                                                                    io.to(sockettoemit).emit('chat message', {
-                                                                        timestamp: data.timestamp,
-                                                                        from: data.from,
-                                                                        message: msg,
-                                                                        file: data.file,
-                                                                        mood: body.mood
-                                                                    });
-                                                                }
-                                                            }
-                                                        );
-                                                    } else {
-
-                                                        io.to(sockettoemit).emit('chat message', {
-                                                            timestamp: data.timestamp,
-                                                            from: data.from,
-                                                            message: msg,
-                                                            file: data.file,
-                                                            mood: body.mood
-                                                        });
+                                                            );
+                                                        } else {
+                                                            io.to(value).emit('chat message', {
+                                                                timestamp: data.timestamp,
+                                                                from: data.from,
+                                                                message: msg,
+                                                                file: data.file,
+                                                                mood: body.mood
+                                                            });
+                                                        }
                                                     }
+                                                });
+                                                nextEach();
+                                            },
+                                            function complete(error) {
+                                                if (error) {
+                                                    console.error(error);
                                                 }
-                                            });
-                                        }
+                                                else {
+                                                    console.log('Iteration complete');
+                                                }
+                                            }
+                                        )
                                     }
                                 });
                         });

@@ -10,6 +10,8 @@
     "name": "Tom Maier, 751605"
   },
   "dependencies": {
+    "async": "^2.6.0",
+    "async-each-object": "0.0.2",
     "bcrypt": "^1.0.3",
     "body-parser": "^1.18.2",
     "connect-mongo": "^2.0.1",
@@ -23,7 +25,6 @@
     "passport-local": "^1.0.0",
     "request": "^2.85.0",
     "socket.io": "^2.1.0",
-    "synchronize": "^2.0.0",
     "watson-developer-cloud": "^3.4.1"
   }
 }
