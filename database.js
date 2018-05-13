@@ -85,6 +85,7 @@ exports.findPasswordHashForUser = function (username, password, callback) {
                         callback(username);
                     } else {
                         console.log('[DEBUG-SERVER] MySQL: Password mismatch for user ' + username);
+                        callback(false);
                     }
                 });
             } else {
@@ -112,6 +113,31 @@ exports.findImageForUser = function (username, callback) {
             if (result !== null && result.length > 0) {
                 //user exists
                 callback(result[0].image);
+            } else {
+                //user does not exist
+                callback(false);
+            }
+        }
+    });
+};
+
+//find the language a user has
+exports.findLanguageForUser = function (username, callback) {
+    if (!username) {
+        console.log('[DEBUG-SERVER] MySQL: Unable to QUERY image because username is missing!');
+        callback(false);
+    }
+    var sql = "SELECT language FROM compose.Users WHERE username = '" + username + "'";
+
+    connection.query(sql, function (err, result) {
+        if (err) {
+            console.log('[DEBUG-SERVER] MySQL: Error while trying to find user ' + username + '!');
+            console.log(err.message);
+            callback(false);
+        } else {
+            if (result !== null && result.length > 0) {
+                //user exists
+                callback(result[0].language);
             } else {
                 //user does not exist
                 callback(false);

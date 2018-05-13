@@ -29,7 +29,6 @@ var key = fs.readFileSync('./bengelmaier_private.key');
 var cert = fs.readFileSync('./servercert.crt');
 */
 
-
 app.use(express.static("public"));
 app.set("view engine", "ejs");
 app.set('views', __dirname + '/view');
@@ -187,7 +186,13 @@ passport.use('passport-local-login', new local({
                     //Check if there is already a user with this name saved
                     database.findPasswordHashForUser(req.body.username, req.body.password, function (user) {
                         if (user) {
-                            done(null, user);
+                            database.findLanguageForUser(user, function (language) {
+                                if (language) {
+                                    done(null, { user: user, language: language });
+                                } else {
+                                    done(null, false);
+                                }
+                            });
                             console.log('[SERVER] Login of ' + req.body.username + ' successful!');
                         } else {
                             done(null, false);
@@ -280,7 +285,6 @@ io.on('connection', function (socket) {
                             }
                         }
                         , function (error, response, body) {
-
                             var parameters = {
                                 text: msg,
                                 model_id: 'en-es'
@@ -290,7 +294,7 @@ io.on('connection', function (socket) {
                                 parameters,
                                 function (error, response) {
                                     if (error) {
-                                        console.log(error)
+                                        console.log(error);
                                     }
                                     else {
                                         msg = response.translations[0].translation;
@@ -315,10 +319,8 @@ io.on('connection', function (socket) {
                                     }
                                 }
                             );
-
                         }
-                    )
-
+                    );
                 } else {
                     socket.emit('error message', 'FEHLER: Der User ist nicht verf&uuml;gbar!');
                 }
@@ -328,8 +330,6 @@ io.on('connection', function (socket) {
         } else {
             //Send regular msg
             if (msg.length > 0 || data.file !== null) {
-
-
                 request.post(
                     {
                         method: 'POST',
@@ -339,35 +339,40 @@ io.on('connection', function (socket) {
                         }
                     }
                     , function (error, response, body) {
+                        database.findLanguageForUser(data.from, function (language) {
+                            if (language) {
+                                var setModelId = language + "-en";
 
-                        var parameters = {
-                            text: msg,
-                            model_id: 'en-es'
-                        };
+                                var parameters = {
+                                    text: msg,
+                                    model_id: setModelId
+                                };
 
-                        languageTranslator.translate(
-                            parameters,
-                            function (error, response) {
-                                if (error) {
-                                    console.log(error)
-                                }
-                                else {
-                                    msg = response.translations[0].translation;
-                                    console.log(msg);
+                                languageTranslator.translate(
+                                    parameters,
+                                    function (error, response) {
+                                        if (error) {
+                                            console.log(error);
+                                        }
+                                        else {
+                                            msg = response.translations[0].translation;
+                                            console.log(msg);
 
-                                    io.emit('chat message', {
-                                        timestamp: data.timestamp,
-                                        from: data.from,
-                                        message: msg,
-                                        file: data.file,
-                                        mood: body.mood
-                                    });
-                                }
+                                            io.emit('chat message', {
+                                                timestamp: data.timestamp,
+                                                from: data.from,
+                                                message: msg,
+                                                file: data.file,
+                                                mood: body.mood
+                                            });
+                                        }
+                                    }
+                                );
                             }
-                        );
+                        });
 
                     }
-                )
+                );
             } else {
                 socket.emit('error message', 'FEHLER: Bitte gib eine Nachricht ein!');
             }
