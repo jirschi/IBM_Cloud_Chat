@@ -114,7 +114,7 @@ $(function () {
             }
         }
     });
-
+    
     //Show private messages
     socket.on('private message sender', function (msg) {
         if (msg.to !== username) {

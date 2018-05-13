@@ -334,20 +334,20 @@ io.on('connection', function (socket) {
                                                             });
                                                         }
                                                     });
-                                                    }
-                                                    
-                                                });
                                             }
+
                                         });
-                                socket.emit('private message sender', {
-                                    timestamp: data.timestamp,
-                                    from: data.from,
-                                    to: username,
-                                    message: msg,
-                                    file: data.file,
-                                    mood: body.mood
-                                });
+                                }
                             });
+                            socket.emit('private message sender', {
+                                timestamp: data.timestamp,
+                                from: data.from,
+                                to: username,
+                                message: msg,
+                                file: data.file,
+                                mood: body.mood
+                            });
+                        });
                 } else {
                     socket.emit('error message', 'FEHLER: Der User ist nicht verf&uuml;gbar!');
                 }
@@ -357,85 +357,95 @@ io.on('connection', function (socket) {
         } else {
             //Send regular msg
             if (msg.length > 0 || data.file !== null) {
-                request.post(
-                    {
-                        method: 'POST',
-                        url: 'https://xenodochial-nightingale.eu-de.mybluemix.net/tone',
-                        json: {
-                            "texts": [msg]
+                if (msg.length > 0) {
+                    request.post(
+                        {
+                            method: 'POST',
+                            url: 'https://xenodochial-nightingale.eu-de.mybluemix.net/tone',
+                            json: {
+                                "texts": [msg]
+                            }
                         }
-                    }
-                    , function (error, response, body) {
+                        , function (error, response, body) {
 
-                        var analyseparameters = {
-                            text: msg
-                        }
+                            var analyseparameters = {
+                                text: msg
+                            }
 
-                        languageTranslator.identify(
-                            analyseparameters,
-                            function (error, response) {
-                                if (error) {
-                                    console.log(error)
-                                } else {
-                                    var analysed_language = response.languages[0].language;
-                                    console.log(analysed_language);
+                            languageTranslator.identify(
+                                analyseparameters,
+                                function (error, response) {
+                                    if (error) {
+                                        console.log(error)
+                                    } else {
+                                        var analysed_language = response.languages[0].language;
+                                        var username = "";
+                                        var sockettoemit = "";
 
-                                    var user;
 
-                                    for (var key in userSocketList) {
-                                        if (userSocketList[key] === socket.id) {
-                                            user = key;
+                                        for (var key in userSocketList) {
+                                            username_toAnalyze = key;
+                                            sockettoemit = userSocketList[key];
+                                            console.log(username_toAnalyze);
+
+                                            database.findLanguageForUser(username_toAnalyze, function (language) {
+
+                                                console.log(username_toAnalyze + " ;" + language)
+
+                                                if (language) {
+
+                                                    var setModelId = analysed_language + "-" + language;
+
+                                                    var parameters = {
+                                                        text: msg,
+                                                        model_id: setModelId
+                                                    };
+
+                                                    if (analysed_language !== language) {
+                                                        languageTranslator.translate(
+                                                            parameters,
+                                                            function (error, response) {
+                                                                if (error) {
+                                                                    console.log(error);
+                                                                }
+                                                                else {
+                                                                    msg = response.translations[0].translation;
+
+                                                                    io.to(sockettoemit).emit('chat message', {
+                                                                        timestamp: data.timestamp,
+                                                                        from: data.from,
+                                                                        message: msg,
+                                                                        file: data.file,
+                                                                        mood: body.mood
+                                                                    });
+                                                                }
+                                                            }
+                                                        );
+                                                    } else {
+
+                                                        io.to(sockettoemit).emit('chat message', {
+                                                            timestamp: data.timestamp,
+                                                            from: data.from,
+                                                            message: msg,
+                                                            file: data.file,
+                                                            mood: body.mood
+                                                        });
+                                                    }
+                                                }
+                                            });
                                         }
                                     }
-
-                                    console.log(user);
-
-                                    database.findLanguageForUser(user, function (language) {
-                                        if (language) {
-
-                                            var setModelId = analysed_language + "-" + language;
-                                            console.log(setModelId);
-
-                                            var parameters = {
-                                                text: msg,
-                                                model_id: setModelId
-                                            };
-
-                                            if (analysed_language !== language) {
-                                                languageTranslator.translate(
-                                                    parameters,
-                                                    function (error, response) {
-                                                        if (error) {
-                                                            console.log(error);
-                                                        }
-                                                        else {
-                                                            msg = response.translations[0].translation;
-                                                            console.log(msg);
-
-                                                            io.emit('chat message', {
-                                                                timestamp: data.timestamp,
-                                                                from: data.from,
-                                                                message: msg,
-                                                                file: data.file,
-                                                                mood: body.mood
-                                                            });
-                                                        }
-                                                    }
-                                                );
-                                            } else {
-                                                io.emit('chat message', {
-                                                    timestamp: data.timestamp,
-                                                    from: data.from,
-                                                    message: msg,
-                                                    file: data.file,
-                                                    mood: body.mood
-                                                });
-                                            }
-                                        }
-                                    });
-                                }
-                            });
+                                });
+                        });
+                } else {
+                    io.emit('chat message', {
+                        timestamp: data.timestamp,
+                        from: data.from,
+                        message: msg,
+                        file: data.file,
+                        mood: "neutral"
                     });
+                }
             } else {
                 socket.emit('error message', 'FEHLER: Bitte gib eine Nachricht ein!');
             }
