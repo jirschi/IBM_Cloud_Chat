@@ -212,8 +212,13 @@ function isWhitespaceOrEmpty(text) {
 
 //----------------- SOCKET HANDLING -----------------------------
 io.on('connection', function (socket) {
+
+    var user = "";
+
     socket.on('send-nickname', function (data) {
         socket.username = data.username;
+        user = data.username;
+        socket.language = data.language;
         if (users.indexOf(socket.username) < 0) {
             users.push(socket.username);
         }
@@ -285,42 +290,64 @@ io.on('connection', function (socket) {
                             }
                         }
                         , function (error, response, body) {
-                            var parameters = {
-                                text: msg,
-                                model_id: 'en-es'
-                            };
 
-                            languageTranslator.translate(
-                                parameters,
-                                function (error, response) {
-                                    if (error) {
-                                        console.log(error);
+                            database.findLanguageForUser(username, function (language) {
+                                if (language) {
+
+                                    var analyseparameters = {
+                                        text: msg
                                     }
-                                    else {
-                                        msg = response.translations[0].translation;
-                                        console.log(msg);
 
-                                        io.to(userSocketList[username]).emit('private message', {
-                                            timestamp: data.timestamp,
-                                            from: data.from,
-                                            message: msg,
-                                            file: data.file,
-                                            mood: body.mood
-                                        });
+                                    languageTranslator.identify(
+                                        analyseparameters,
+                                        function (error, response) {
+                                            if (error) {
+                                                console.log(error)
+                                            } else {
+                                                var analysed_language = response.languages[0].language;
+                                                console.log(analysed_language);
 
-                                        socket.emit('private message sender', {
-                                            timestamp: data.timestamp,
-                                            from: data.from,
-                                            to: username,
-                                            message: msg,
-                                            file: data.file,
-                                            mood: body.mood
+                                                var setModelId = analysed_language + "-" + language;
+                                                console.log(setModelId);
+
+                                                var parameters = {
+                                                    text: msg,
+                                                    model_id: setModelId
+                                                };
+
+                                                languageTranslator.translate(
+                                                    parameters,
+                                                    function (error, response) {
+                                                        if (error) {
+                                                            console.log(error);
+                                                        }
+                                                        else {
+                                                            msg = response.translations[0].translation;
+                                                            console.log(msg);
+
+                                                            io.to(userSocketList[username]).emit('private message', {
+                                                                timestamp: data.timestamp,
+                                                                from: data.from,
+                                                                message: msg,
+                                                                file: data.file,
+                                                                mood: body.mood
+                                                            });
+                                                        }
+                                                    });
+                                                    }
+                                                    
+                                                });
+                                            }
                                         });
-                                    }
-                                }
-                            );
-                        }
-                    );
+                                socket.emit('private message sender', {
+                                    timestamp: data.timestamp,
+                                    from: data.from,
+                                    to: username,
+                                    message: msg,
+                                    file: data.file,
+                                    mood: body.mood
+                                });
+                            });
                 } else {
                     socket.emit('error message', 'FEHLER: Der User ist nicht verf&uuml;gbar!');
                 }
@@ -339,40 +366,76 @@ io.on('connection', function (socket) {
                         }
                     }
                     , function (error, response, body) {
-                        database.findLanguageForUser(data.from, function (language) {
-                            if (language) {
-                                var setModelId = language + "-en";
 
-                                var parameters = {
-                                    text: msg,
-                                    model_id: setModelId
-                                };
+                        var analyseparameters = {
+                            text: msg
+                        }
 
-                                languageTranslator.translate(
-                                    parameters,
-                                    function (error, response) {
-                                        if (error) {
-                                            console.log(error);
-                                        }
-                                        else {
-                                            msg = response.translations[0].translation;
-                                            console.log(msg);
+                        languageTranslator.identify(
+                            analyseparameters,
+                            function (error, response) {
+                                if (error) {
+                                    console.log(error)
+                                } else {
+                                    var analysed_language = response.languages[0].language;
+                                    console.log(analysed_language);
 
-                                            io.emit('chat message', {
-                                                timestamp: data.timestamp,
-                                                from: data.from,
-                                                message: msg,
-                                                file: data.file,
-                                                mood: body.mood
-                                            });
+                                    var user;
+
+                                    for (var key in userSocketList) {
+                                        if (userSocketList[key] === socket.id) {
+                                            user = key;
                                         }
                                     }
-                                );
-                            }
-                        });
 
-                    }
-                );
+                                    console.log(user);
+
+                                    database.findLanguageForUser(user, function (language) {
+                                        if (language) {
+
+                                            var setModelId = analysed_language + "-" + language;
+                                            console.log(setModelId);
+
+                                            var parameters = {
+                                                text: msg,
+                                                model_id: setModelId
+                                            };
+
+                                            if (analysed_language !== language) {
+                                                languageTranslator.translate(
+                                                    parameters,
+                                                    function (error, response) {
+                                                        if (error) {
+                                                            console.log(error);
+                                                        }
+                                                        else {
+                                                            msg = response.translations[0].translation;
+                                                            console.log(msg);
+
+                                                            io.emit('chat message', {
+                                                                timestamp: data.timestamp,
+                                                                from: data.from,
+                                                                message: msg,
+                                                                file: data.file,
+                                                                mood: body.mood
+                                                            });
+                                                        }
+                                                    }
+                                                );
+                                            } else {
+                                                io.emit('chat message', {
+                                                    timestamp: data.timestamp,
+                                                    from: data.from,
+                                                    message: msg,
+                                                    file: data.file,
+                                                    mood: body.mood
+                                                });
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+                    });
             } else {
                 socket.emit('error message', 'FEHLER: Bitte gib eine Nachricht ein!');
             }
