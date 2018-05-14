@@ -32,7 +32,7 @@ var key = fs.readFileSync('./bengelmaier_private.key');
 var cert = fs.readFileSync('./servercert.crt');
 */
 
-app.use(express.static("public"));
+app.use(express.static(path.join(__dirname, "public")));
 app.set("view engine", "ejs");
 app.set('views', __dirname + '/view');
 
