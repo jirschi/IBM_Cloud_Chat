@@ -8,10 +8,10 @@ const connection = mysql.createConnection(
         host: 'sl-eu-fra-2-portal.4.dblayer.com',
         port: 16713,
         user: 'admin',
-        password: 'SVZBHTBXIYEOAZOV'//,
-        //ssl: {
-        //    ca: fs.readFileSync('./db_cert.crt')
-        //}
+        password: 'SVZBHTBXIYEOAZOV',
+        ssl: {
+            ca: fs.readFileSync('./db_cert.crt')
+        }
     });
 
 

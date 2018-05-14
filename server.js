@@ -97,30 +97,24 @@ app.get('/chat', function (req, res) {
     }
 });
 
-app.post('/register', passport.authenticate('passport-local-register', {
-    successRedirect: '/chat',
-    failureRedirect: '/'
-}));
-
 app.post('/login', passport.authenticate('passport-local-login', {
     successRedirect: '/chat',
     failureRedirect: '/'
 }));
 
-app.post('/debug', function (req, res, next) {
+app.post('/register', function (req, res, next) {
     var form = new formidable.IncomingForm();
     form.keepExtensions = true;
     form.parse(req, function (err, fields, files) {
         req.body.username = fields.username;
         req.body.password = fields.password;
         req.body.language = fields.language;
-        req.body.image = files.file.path;
 
         /*
          * mehr prüfungen. Liegt ein image vor? Ist es zu groß? Etc.
-         */ 
-        if (req.body.image) {
-            var data = fs.readFileSync(req.body.image);
+         */
+        if (files.file !== null && files.file.size > 0 && files.file.type.startsWith("image")) {
+            var data = fs.readFileSync(files.file.path);
             var content = new Buffer(data).toString('base64');
 
             req.body.image = 'data:' + files.file.type + ';base64,' + content;
@@ -243,10 +237,16 @@ io.on('connection', function (socket) {
         socket.username = data.username;
         user = data.username;
         socket.language = data.language;
-        if (users.indexOf(socket.username) < 0) {
-            users.push(socket.username);
-        }
-        updateUsers();
+            database.findImageForUser(socket.username, function (image) {
+                var payload = {};
+                if (image) {
+                    payload = { username: socket.username, image: image };
+                } else {
+                    payload = { username: socket.username, image: "common/img/chatDummy.jpg" };
+                }
+                users.push(payload);
+                updateUsers();
+            });
     });
 
     function updateUsers() {
@@ -274,8 +274,7 @@ io.on('connection', function (socket) {
                 data.timestamp = d;
                 data.username = key;
                 data.message = "Disconnected";
-                console.log(users);
-                var index = users.indexOf(key);
+                var index = users.findIndex(x => x.username === data.username);
                 if (index >= 0) {
                     users.splice(index, 1);
                 }
@@ -291,7 +290,7 @@ io.on('connection', function (socket) {
         var d = new Date(new Date().getTime()).toLocaleTimeString();
         data.timestamp = d;
         var msg = data.message.trim(); //remove white space
-        if (msg.substr(0, 3) === '/w ') { //is the user whispering?
+        if(msg.substr(0, 3) === '/w ') { //is the user whispering?
             msg = msg.substr(3); //substring /w
             var ind = msg.indexOf(' ');
             if (ind !== -1 || data.file !== null) {
@@ -341,7 +340,14 @@ io.on('connection', function (socket) {
                                                     parameters,
                                                     function (error, response) {
                                                         if (error) {
-                                                            console.log(error);
+                                                            console.log("Translator model not found. Sending message untranslated!");
+                                                            io.to(userSocketList[username]).emit('private message', {
+                                                                timestamp: data.timestamp,
+                                                                from: data.from,
+                                                                message: msg,
+                                                                file: data.file,
+                                                                mood: body.mood
+                                                            });
                                                         }
                                                         else {
                                                             msg = response.translations[0].translation;
@@ -421,7 +427,14 @@ io.on('connection', function (socket) {
                                                                 parameters,
                                                                 function (error, response) {
                                                                     if (error) {
-                                                                        console.log(error);
+                                                                        console.log("Translator model not found. Sending message untranslated!");
+                                                                        io.to(value).emit('chat message', {
+                                                                            timestamp: data.timestamp,
+                                                                            from: data.from,
+                                                                            message: msg,
+                                                                            file: data.file,
+                                                                            mood: body.mood
+                                                                        });
                                                                     }
                                                                     else {
                                                                         msg = response.translations[0].translation;

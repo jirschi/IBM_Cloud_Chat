@@ -10,31 +10,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="common/bootstrap-4.0.0-dist/js/bootstrap.min.js"></script>
     <script type="text/javascript">
-
-        var mediaFile;
-
-        function init() {
-
-            $('#picture').before('<input type="button" id="button-file" class=" form-control btn btn-md btn-primary btn-block" value="Add File" onchange="checkIfMsgEx()"/> ');
-            $('#picture').hide();
-            $('body').on('click', '#button-file', function () {
-                $('#picture').trigger('click');
-            });
-
-            $('#picture').on('change', function (e) {
-                var file = e.originalEvent.target.files[0];
-                var reader = new FileReader();
-                reader.onload = function (evt) {
-                    mediaFile = evt.target.result;
-                    console.log('Prepared: ' + mediaFile);
-                };
-                reader.readAsDataURL(file);
-
-                $('#pictureDiv :input#picture.form-control').html("lol");
-                $('#pictureDiv :input#picture.form-control').val("C:\\fakepath\\ohyes");
-            });
-        }
-
         function nospaces(t) {
 
             if (t.value.match(/\s/g)) {
@@ -70,7 +45,7 @@
             <div class="col-md-4">
             </div>
             <div id="dataBox" class="col-xs-4 col-sm-4 col-md-4">
-                <form class="form" role="form" action="/debug" method="post" enctype="multipart/form-data">
+                <form class="form" role="form" action="/register" method="post" enctype="multipart/form-data">
                     <div class="row">
                         <div class="col-xs-12 col-md-12">
                             <input class="form-control" name="username" placeholder="Nickname" type="text" maxlength="15" onkeyup="nospaces(this)" required />

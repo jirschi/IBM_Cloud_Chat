@@ -1,7 +1,11 @@
 ﻿//Tom Maier, 751605; Jerg Bengel, 752685
+
+var globalUserList = [];
+
 $(function () {
     var socket = io.connect();
     var mediaFile = null;
+
     var user = {
         "username": username,
         "language": language
@@ -62,9 +66,10 @@ $(function () {
 
     //Write usernames in list of online-users
     socket.on('users', function (data) {
+        globalUserList = data;
         $('.userList').empty();
         $.each(data, function (i, v) {
-            $('.userList').append('<div class="row"><div class="col-md-4"><img src="common/img/chatDummy.jpg" alt="" class="rounded-circle" width="52"/></div><div class="col-md-8 namelink nameInList" value="' + v + '">' + v + '</div></div>');
+            $('.userList').append('<div class="row"><div class="col-md-4"><img src="' + v.image + '" alt="" class="rounded-circle" height="52" width="52"/></div><div class="col-md-8 namelink nameInList" value="' + v.username + '">' + v.username + '</div></div>');
         });
     });
 
@@ -73,15 +78,15 @@ $(function () {
         if (msg.user === username) {
             addPost("Herzlich Willkommen im Chat " + msg.user + "!", 'System', msg.timestamp, 'msg-response', 'response');
         } else {
-            addPost(nameLink(msg.user) + "  ist dem Chat beigetreten!", 'System', msg.timestamp, 'msg-response', 'response');
+            addPost(nameLink(msg.user) + " ist dem Chat beigetreten!", 'System', msg.timestamp, 'msg-response', 'response');
         }
     });
 
-    //Receive message with timestamp username and message 
+    //Receive message with timestamp username and message
     socket.on('chat message', function (msg) {
         if (msg.from === username) {
             if (msg.message.length > 0) {
-                addPost(msg.message, nameLink(msg.from)+": "+msg.mood, msg.timestamp, 'msg', '');
+                addPost(msg.message, msg.from + ": " + msg.mood, msg.timestamp, 'msg', '');
             }
             if (msg.file !== null) {
                 addPost('<a target ="_blank" href="' + msg.file + '"><object data="' + msg.file + '"></object></a>', nameLink(msg.from) + ": " + msg.mood, msg.timestamp, 'msg', '');
@@ -114,7 +119,7 @@ $(function () {
             }
         }
     });
-    
+
     //Show private messages
     socket.on('private message sender', function (msg) {
         if (msg.to !== username) {
@@ -129,7 +134,11 @@ $(function () {
 
     //System-msg to all users when user disconnects
     socket.on("disconnect", function (msg) {
-        addPost(msg.username + " hat den Chat verlassen.", 'System', msg.timestamp, 'msg-response', 'response');
+        if (msg === "transport close" || msg === "transport error") {
+            addPost("Connection closed by web service!", 'System', new Date(new Date().getTime()).toLocaleTimeString(), 'msg-response', 'response');
+        } else {
+            addPost(msg.username + " hat den Chat verlassen.", 'System', msg.timestamp, 'msg-response', 'response');
+        }
     });
 
     //System-msg on error
@@ -140,15 +149,15 @@ $(function () {
 
 //Replace name with link for whisper
 function nameLink(name) {
-    return "<span class=\"namelink\" id=\"name\" value=\"" + name + "\">" + name + "</span>";
+    return name;
 }
 
 //Function to append message to chat-div
 function addPost(text, sender, date, styleClass, rowClass) {
     if (rowClass === "response") {
-        $('#history').append($('<div class="row message ' + rowClass + '"><div class="col-md-11"><p class="' + styleClass + '">' + text + '</p> <div class="clearfix"></div><small class="text-muted">' + sender + ', ' + date + '</small><div class="clearfix"></div></div><div class="col-md-1"><img src="common/img/chatDummy.jpg" alt="" class="rounded-circle" width="52"></div></div >'));
+        $('#history').append($('<div class="row message ' + rowClass + '"><div class="col-md-11"><p class="' + styleClass + '">' + text + '</p> <div class="clearfix"></div><small class="text-muted">' + nameLink(sender) + ', ' + date + '</small><div class="clearfix"></div></div><div class="col-md-1"><img src="' + findImageForUser(sender) + '" alt="" class="rounded-circle" width="52" height="52"></div></div >'));
     } else {
-        $('#history').append($('<div class="row message ' + rowClass + '"><div class="col-md-1"><img src="common/img/chatDummy.jpg" alt="" class="rounded-circle" width="52"></div><div class="col-md-11"><p class="' + styleClass + '">' + text + '</p> <div class="clearfix"></div><small class="text-muted">' + sender + ', ' + date + '</small><div class="clearfix"></div></div></div >'));
+        $('#history').append($('<div class="row message ' + rowClass + '"><div class="col-md-1"><img src="' + findImageForUser(sender) + '" alt="" class="rounded-circle" width="52" height="52"></div><div class="col-md-11"><p class="' + styleClass + '">' + text + '</p> <div class="clearfix"></div><small class="text-muted">' + nameLink(sender) + ', ' + date + '</small><div class="clearfix"></div></div></div >'));
     }
     $(".namelink").click(function () {
         autoWhisper($(this).attr("value"));
@@ -178,4 +187,21 @@ function autoWhisper(username) {
 function scrollToBottom() {
     var div = $("#history");
     div.scrollTop(div.prop('scrollHeight'));
+}
+
+function findImageForUser(username) {
+    var result = "common/img/chatDummy.jpg";
+    if (username !== "System") {
+        if (username.includes(":")) {
+            username = username.split(":")[0];
+        }
+
+        for (var i = 0; i < globalUserList.length; i++) {
+            if (globalUserList[i].username === username) {
+                if (globalUserList[i].image)
+                    result = globalUserList[i].image;
+            }
+        }
+    }
+    return result;
 }
