@@ -83,14 +83,14 @@ $(function () {
             if (msg.message.length > 0) {
                 addPost(msg.message, nameLink(msg.from)+": "+msg.mood, msg.timestamp, 'msg', '');
             }
-            if (msg.file != null) {
+            if (msg.file !== null) {
                 addPost('<a target ="_blank" href="' + msg.file + '"><object data="' + msg.file + '"></object></a>', nameLink(msg.from) + ": " + msg.mood, msg.timestamp, 'msg', '');
             }
         } else {
             if (msg.message.length > 0) {
                 addPost(msg.message, nameLink(msg.from) + ": " + msg.mood, msg.timestamp, 'msg-response', 'response');
             }
-            if (msg.file != null) {
+            if (msg.file !== null) {
                 addPost('<a target ="_blank" href="' + msg.file + '"><object data="' + msg.file + '"></object></a>', nameLink(msg.from) + ": " + msg.mood, msg.timestamp, 'msg-response', 'response');
             }
         }
@@ -102,14 +102,14 @@ $(function () {
             if (msg.message.length > 0) {
                 addPost("Private message von " + msg.from + ": " + msg.message, nameLink(msg.from) + ": " + msg.mood, msg.timestamp, 'msg', '');
             }
-            if (msg.file != null) {
+            if (msg.file !== null) {
                 addPost('Private message von ' + msg.from + ': <a target ="_blank" href="' + msg.file + '"><object data="' + msg.file + '"></object></a>', nameLink(msg.from) + ": " + msg.mood, msg.timestamp, 'msg', '');
             }
         } else {
             if (msg.message.length > 0) {
                 addPost("Private message von " + msg.from + ": " + msg.message, nameLink(msg.from) + ": " + msg.mood, msg.timestamp, 'msg-response', 'response');
             }
-            if (msg.file != null) {
+            if (msg.file !== null) {
                 addPost('Private message von ' + msg.from + ': <a target ="_blank" href="' + msg.file + '"><object data="' + msg.file + '"></object></a>', nameLink(msg.from) + ": " + msg.mood, msg.timestamp, 'msg-response', 'response');
             }
         }
@@ -121,7 +121,7 @@ $(function () {
             if (msg.message.length > 0) {
                 addPost("Private message to - " + nameLink(msg.to) + ": " + msg.message, nameLink(msg.to) + ": " + msg.mood, msg.timestamp, 'msg', '');
             }
-            if (msg.file != null) {
+            if (msg.file !== null) {
                 addPost("Private message to - " + nameLink(msg.to) + '<a target ="_blank" href="' + msg.file + '"><object data="' + msg.file + '"></object></a>', nameLink(msg.to) + ": " + msg.mood, msg.timestamp, 'msg', '');
             }
         }
@@ -158,15 +158,15 @@ function addPost(text, sender, date, styleClass, rowClass) {
 
 //Add wisper command and target-username
 function autoWhisper(username) {
-    if ($('#m').val().indexOf("/w") == -1) {
-        if ($('#m').val().length == 0) {
+    if ($('#m').val().indexOf("/w") === -1) {
+        if ($('#m').val().length === 0) {
             $('#m').val("/w " + username + " ");
         } else {
             var text = $('#m').val();
             $('#m').val("/w " + username + text);
         }
     } else {
-        if ($('#m').val().length <= 3 || $('#m').val().indexOf(username) == -1) {
+        if ($('#m').val().length <= 3 || $('#m').val().indexOf(username) === -1) {
             $('#m').val("");
             autoWhisper(username);
         }

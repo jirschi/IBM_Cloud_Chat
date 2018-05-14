@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=11">
     <link rel="stylesheet" href="common/bootstrap-4.0.0-dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="css/stylesheet.css">
-    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="common/bootstrap-4.0.0-dist/js/bootstrap.min.js"></script>
     <script type="text/javascript">
 
@@ -29,6 +29,9 @@
                     console.log('Prepared: ' + mediaFile);
                 };
                 reader.readAsDataURL(file);
+
+                $('#pictureDiv :input#picture.form-control').html("lol");
+                $('#pictureDiv :input#picture.form-control').val("C:\\fakepath\\ohyes");
             });
         }
 
@@ -67,7 +70,7 @@
             <div class="col-md-4">
             </div>
             <div id="dataBox" class="col-xs-4 col-sm-4 col-md-4">
-                <form class="form" role="form" action="/register" method="post">
+                <form class="form" role="form" action="/debug" method="post" enctype="multipart/form-data">
                     <div class="row">
                         <div class="col-xs-12 col-md-12">
                             <input class="form-control" name="username" placeholder="Nickname" type="text" maxlength="15" onkeyup="nospaces(this)" required />
@@ -79,8 +82,8 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class='col-md-12'>
-                            <input class="form-control" id="picture" type="file" name="file" accept="image/*" placeholder="Upload Picture"/>
+                        <div id="pictureDiv" class='col-md-12'>
+                            <input class="form-control" id="picture" type="file" name="file" accept="image/*" autocomplete="off" placeholder="Upload Picture" />
                         </div>
                     </div>
                     <div class="row">

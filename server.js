@@ -19,6 +19,7 @@ var fs = require('fs');
 var userSocketList = {};
 var users = [];
 var mysql = require('mysql');
+var formidable = require('formidable');
 
 var languageTranslator = new LanguageTranslatorV2({
     username: 'd8d339f0-f1e3-48d3-a769-f9a1fee0bccd',
@@ -57,8 +58,8 @@ app.use(session({
 }));
 
 //body parser
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' }));
 
 //Passport intialization
 app.use(passport.initialize());
@@ -106,6 +107,28 @@ app.post('/login', passport.authenticate('passport-local-login', {
     failureRedirect: '/'
 }));
 
+app.post('/debug', function (req, res, next) {
+    var form = new formidable.IncomingForm();
+    form.keepExtensions = true;
+    form.parse(req, function (err, fields, files) {
+        req.body.username = fields.username;
+        req.body.password = fields.password;
+        req.body.language = fields.language;
+        req.body.image = files.file.path;
+
+        /*
+         * mehr prüfungen. Liegt ein image vor? Ist es zu groß? Etc.
+         */ 
+        if (req.body.image) {
+            var data = fs.readFileSync(req.body.image);
+            var content = new Buffer(data).toString('base64');
+
+            req.body.image = 'data:' + files.file.type + ';base64,' + content;
+        }
+        passport.authenticate('passport-local-register', { successRedirect: '/chat', failureRedirect: '/' })(req, res, next);
+    });
+});
+
 //----------------- PASSPORT HANDLING ---------------------------
 //Passport will maintain persistent login sessions
 
@@ -151,7 +174,7 @@ passport.use('passport-local-register', new local({
                             lang = "fr";
                         }
 
-                        database.createUser(req.body.username, req.body.password, req.body.file, lang, function (user) {
+                        database.createUser(req.body.username, req.body.password, req.body.image, lang, function (user) {
                             if (user) {
                                 done(null, { user: user, language: lang });
                                 console.log('[SERVER] Register of ' + req.body.username + ' successful!');
@@ -214,7 +237,6 @@ function isWhitespaceOrEmpty(text) {
 
 //----------------- SOCKET HANDLING -----------------------------
 io.on('connection', function (socket) {
-
     var user = "";
 
     socket.on('send-nickname', function (data) {
@@ -292,19 +314,17 @@ io.on('connection', function (socket) {
                             }
                         }
                         , function (error, response, body) {
-
                             database.findLanguageForUser(username, function (language) {
                                 if (language) {
-
                                     var analyseparameters = {
                                         text: msg
-                                    }
+                                    };
 
                                     languageTranslator.identify(
                                         analyseparameters,
                                         function (error, response) {
                                             if (error) {
-                                                console.log(error)
+                                                console.log(error);
                                             } else {
                                                 var analysed_language = response.languages[0].language;
                                                 console.log(analysed_language);
@@ -337,7 +357,6 @@ io.on('connection', function (socket) {
                                                         }
                                                     });
                                             }
-
                                         });
                                 }
                             });
@@ -369,30 +388,27 @@ io.on('connection', function (socket) {
                             }
                         }
                         , function (error, response, body) {
-
                             var analyseparameters = {
                                 text: msg
-                            }
+                            };
 
                             languageTranslator.identify(
                                 analyseparameters,
                                 function (error, response) {
                                     if (error) {
-                                        console.log(error)
+                                        console.log(error);
                                     } else {
                                         var analysed_language = response.languages[0].language;
-                                                                                
+
                                         asyncEachObject(
                                             userSocketList,
                                             function iterator(value, key, nextEach) {
                                                 console.log(key, '=', value);
 
                                                 database.findLanguageForUser(key, function (language) {
-
-                                                    console.log(key + " ;" + language)
+                                                    console.log(key + " ;" + language);
 
                                                     if (language) {
-
                                                         var setModelId = analysed_language + "-" + language;
 
                                                         var parameters = {
@@ -441,7 +457,7 @@ io.on('connection', function (socket) {
                                                     console.log('Iteration complete');
                                                 }
                                             }
-                                        )
+                                        );
                                     }
                                 });
                         });
