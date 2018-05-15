@@ -73,11 +73,11 @@
   <ItemGroup>
     <Folder Include="model\" />
     <Folder Include="public\" />
-    <Folder Include="public\Common\" />
-    <Folder Include="public\Common\bootstrap-4.0.0-dist\" />
-    <Folder Include="public\Common\bootstrap-4.0.0-dist\css\" />
-    <Folder Include="public\Common\bootstrap-4.0.0-dist\js\" />
-    <Folder Include="public\Common\img\" />
+    <Folder Include="public\common\" />
+    <Folder Include="public\common\bootstrap-4.0.0-dist\" />
+    <Folder Include="public\common\bootstrap-4.0.0-dist\css\" />
+    <Folder Include="public\common\bootstrap-4.0.0-dist\js\" />
+    <Folder Include="public\common\img\" />
     <Folder Include="public\css\" />
     <Folder Include="public\js\" />
     <Folder Include="view\" />
