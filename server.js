@@ -31,8 +31,20 @@ app.use(express.static("public"));
 app.set("view engine", "ejs");
 app.set('views', __dirname + '/view');
 
-//mysql
+//Enforce HTTPS
+app.enable('trust proxy');
 
+app.use(function (req, res, next) {
+    if (req.secure) {
+        // request was via https, so do no special handling
+        next();
+    } else {
+        // request was via http, so redirect to https
+        res.redirect('https://' + req.headers.host + req.url);
+    }
+});
+
+//mysql
 var options = {
     host: 'sl-eu-fra-2-portal.4.dblayer.com',
     port: 16713,
