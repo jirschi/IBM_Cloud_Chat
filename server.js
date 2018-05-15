@@ -27,12 +27,7 @@ var languageTranslator = new LanguageTranslatorV2({
     url: 'https://gateway-fra.watsonplatform.net/language-translator/api'
 });
 
-/*
-var key = fs.readFileSync('./bengelmaier_private.key');
-var cert = fs.readFileSync('./servercert.crt');
-*/
-
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static("public"));
 app.set("view engine", "ejs");
 app.set('views', __dirname + '/view');
 
@@ -111,7 +106,7 @@ app.post('/register', function (req, res, next) {
         req.body.language = fields.language;
 
         /*
-         * mehr prüfungen. Liegt ein image vor? Ist es zu groß? Etc.
+         * Image überprüfung
          */
         if (files.file !== null && files.file.size > 0 && files.file.type.startsWith("image")) {
             var data = fs.readFileSync(files.file.path);
@@ -489,12 +484,6 @@ io.on('connection', function (socket) {
         }
     });
 });
-/*
-var httpsOptions = {
-    key: key,
-    cert: cert
-};
-*/
 
 http.listen(port, function () {
     console.log('listening on *:3000');
