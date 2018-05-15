@@ -31,6 +31,7 @@ app.use(express.static("public"));
 app.set("view engine", "ejs");
 app.set('views', __dirname + '/view');
 
+
 //Enforce HTTPS
 app.enable('trust proxy');
 
@@ -43,6 +44,7 @@ app.use(function (req, res, next) {
         res.redirect('https://' + req.headers.host + req.url);
     }
 });
+
 
 //mysql
 var options = {
@@ -93,12 +95,14 @@ app.get('/error', function (req, res) {
 });
 
 app.get('/chat', function (req, res) {
-    console.log('[SERVER] forwarding user: ' + req.session.passport.user.user + ' to chat with language: ' + req.session.passport.user.language);
-    if (req.session.passport.user.user !== null && req.session.passport.user.language !== null) {
-        res.render('index', {
-            username: req.session.passport.user.user,
-            language: req.session.passport.user.language
-        });
+    if (typeof req.session.passport != "undefined") {
+        if (req.session.passport.user.user !== null && req.session.passport.user.language !== null) {
+            console.log('[SERVER] forwarding user: ' + req.session.passport.user.user + ' to chat with language: ' + req.session.passport.user.language);
+            res.render('index', {
+                username: req.session.passport.user.user,
+                language: req.session.passport.user.language
+            });
+        }
     } else {
         res.redirect('/');
     }
@@ -244,16 +248,16 @@ io.on('connection', function (socket) {
         socket.username = data.username;
         user = data.username;
         socket.language = data.language;
-            database.findImageForUser(socket.username, function (image) {
-                var payload = {};
-                if (image) {
-                    payload = { username: socket.username, image: image };
-                } else {
-                    payload = { username: socket.username, image: "common/img/chatDummy.jpg" };
-                }
-                users.push(payload);
-                updateUsers();
-            });
+        database.findImageForUser(socket.username, function (image) {
+            var payload = {};
+            if (image) {
+                payload = { username: socket.username, image: image };
+            } else {
+                payload = { username: socket.username, image: "common/img/chatDummy.jpg" };
+            }
+            users.push(payload);
+            updateUsers();
+        });
     });
 
     function updateUsers() {
@@ -297,7 +301,7 @@ io.on('connection', function (socket) {
         var d = new Date(new Date().getTime()).toLocaleTimeString();
         data.timestamp = d;
         var msg = data.message.trim(); //remove white space
-        if(msg.substr(0, 3) === '/w ') { //is the user whispering?
+        if (msg.substr(0, 3) === '/w ') { //is the user whispering?
             msg = msg.substr(3); //substring /w
             var ind = msg.indexOf(' ');
             if (ind !== -1 || data.file !== null) {
