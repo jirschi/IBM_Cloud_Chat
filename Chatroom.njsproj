@@ -33,7 +33,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="database.js" />
-    <Compile Include="model\user.js" />
     <Compile Include="public\Common\bootstrap-4.0.0-dist\js\bootstrap.bundle.js" />
     <Compile Include="public\Common\bootstrap-4.0.0-dist\js\bootstrap.bundle.min.js" />
     <Compile Include="public\Common\bootstrap-4.0.0-dist\js\bootstrap.js" />
@@ -71,7 +70,6 @@
     <Content Include="view\register.html" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="model\" />
     <Folder Include="public\" />
     <Folder Include="public\common\" />
     <Folder Include="public\common\bootstrap-4.0.0-dist\" />
