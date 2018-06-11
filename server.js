@@ -1,8 +1,8 @@
 //Tom Maier, 751605; Jerg Bengel, 752685
 var express = require("express");
 var app = express();
-var port = process.env.PORT || process.env.VCAP_APP_PORT || 3000;
-//var port = 3000;
+//var port = process.env.PORT || process.env.VCAP_APP_PORT || 3000;
+var port = 3000;
 var http = require('http').Server(app);
 var io = require('socket.io').listen(http);
 var bodyParser = require('body-parser');
@@ -20,6 +20,9 @@ var userSocketList = {};
 var users = [];
 var mysql = require('mysql');
 var formidable = require('formidable');
+var xssFilter = require('x-xss-protection');
+var csp = require('helmet-csp');
+var noSniff = require('dont-sniff-mimetype');
 
 var languageTranslator = new LanguageTranslatorV2({
     username: 'd8d339f0-f1e3-48d3-a769-f9a1fee0bccd',
@@ -28,6 +31,14 @@ var languageTranslator = new LanguageTranslatorV2({
 });
 
 app.use(express.static("public"));
+app.use(xssFilter({ setOnOldIE: true }));
+app.use(csp({
+    directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", 'maxcdn.bootstrapcdn.com']
+    }
+}));
+app.use(noSniff());
 app.set("view engine", "ejs");
 app.set('views', __dirname + '/view');
 
