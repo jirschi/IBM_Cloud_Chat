@@ -49,7 +49,8 @@ app.use(csp({
         styleSrc: styleSources,
         fontSrc: fontSources,
         connectSrc: connectSources,
-        'img-src': imgSources
+        'img-src': imgSources,
+        'object-src': imgSources
     }
 }));
 app.use(noSniff());
