@@ -49,7 +49,7 @@ app.use(csp({
         styleSrc: styleSources,
         fontSrc: fontSources,
         connectSrc: connectSources,
-        imgSrc: imgSources
+        img-src: imgSources
     }
 }));
 app.use(noSniff());
