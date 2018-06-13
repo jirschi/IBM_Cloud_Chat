@@ -40,7 +40,7 @@ var scriptSources = ["'self'", "'unsafe-inline'", "'unsafe-eval'", "ajax.googlea
 var styleSources = ["'self'", "'unsafe-inline'", "ajax.googleapis.com", 'maxcdn.bootstrapcdn.com'];
 var fontSources = ["'self'", 'maxcdn.bootstrapcdn.com'];
 var connectSources = ['wss://mystifying-jang.eu-de.mybluemix.net', 'https://mystifying-jang.eu-de.mybluemix.net/', 'mystifying-jang.eu-de.mybluemix.net/']
-var imgSources = ['data:image/png;base64', 'data:image/jpg;base64', 'data:image']
+var imgSources = ['data:image', "'self'"]
 
 app.use(csp({
     directives: {
