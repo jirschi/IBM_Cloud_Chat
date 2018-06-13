@@ -39,14 +39,14 @@ app.use(xssFilter({ setOnOldIE: true }));
 var scriptSources = ["'self'", "'unsafe-inline'", "'unsafe-eval'", "ajax.googleapis.com", "code.jquery.com", 'maxcdn.bootstrapcdn.com'];
 var styleSources = ["'self'", "'unsafe-inline'", "ajax.googleapis.com", 'maxcdn.bootstrapcdn.com'];
 var fontSources = ["'self'", 'maxcdn.bootstrapcdn.com'];
-
+var connectSources = ['wss://mystifying-jang.eu-de.mybluemix.net', 'https://mystifying-jang.eu-de.mybluemix.net/', 'mystifying-jang.eu-de.mybluemix.net/']
 app.use(csp({
     directives: {
         defaultSrc: ["'self'"],
         scriptSrc: scriptSources,
         styleSrc: styleSources,
         fontSrc: fontSources,
-        connectSrc: ['wss://mystifying-jang.eu-de.mybluemix.net']
+        connectSrc: connectSources
     }
 }));
 app.use(noSniff());
