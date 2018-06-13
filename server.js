@@ -21,7 +21,7 @@ var users = [];
 var mysql = require('mysql');
 var formidable = require('formidable');
 var xssFilter = require('x-xss-protection');
-//var csp = require('helmet-csp');
+var csp = require('helmet-csp');
 var noSniff = require('dont-sniff-mimetype');
 const csurf = require('csurf');
 
@@ -35,12 +35,17 @@ var languageTranslator = new LanguageTranslatorV2({
 
 app.use(express.static("public"));
 app.use(xssFilter({ setOnOldIE: true }));
-/*app.use(csp({
+
+var scriptSources = ["'self'", "'unsafe-inline'", "'unsafe-eval'", "ajax.googleapis.com", "code.jquery.com", 'maxcdn.bootstrapcdn.com'];
+var styleSources = ["'self'", "'unsafe-inline'", "ajax.googleapis.com", 'maxcdn.bootstrapcdn.com'];
+
+app.use(csp({
     directives: {
         defaultSrc: ["'self'"],
-        styleSrc: ["'self'", 'maxcdn.bootstrapcdn.com']
+        scriptSrc: scriptSources,
+        styleSrc: styleSources
     }
-}));*/
+}));
 app.use(noSniff());
 
 app.set("view engine", "ejs");
