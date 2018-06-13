@@ -275,7 +275,7 @@ io.on('connection', function (socket) {
             if (image) {
                 payload = { username: socket.username, image: image };
             } else {
-                payload = { username: socket.username, image: "common/img/chatDummy.jpg" };
+                payload = { username: socket.username, image: "Common/img/chatDummy.jpg" };
             }
             users.push(payload);
             updateUsers();

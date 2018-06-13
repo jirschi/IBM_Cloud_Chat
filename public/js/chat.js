@@ -191,7 +191,7 @@ function scrollToBottom() {
 }
 
 function findImageForUser(username) {
-    var result = "common/img/chatDummy.jpg";
+    var result = "Common/img/chatDummy.jpg";
     if (username !== "System") {
         if (username.includes(":")) {
             username = username.split(":")[0];
