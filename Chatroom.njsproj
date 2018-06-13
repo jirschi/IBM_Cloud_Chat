@@ -40,6 +40,7 @@
     <Compile Include="public\js\chat.js">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="public\js\register.js" />
     <Compile Include="server.js" />
     <Content Include="db_cert.crt" />
     <Content Include="package.json" />
