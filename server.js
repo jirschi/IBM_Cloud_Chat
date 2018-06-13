@@ -32,12 +32,12 @@ var languageTranslator = new LanguageTranslatorV2({
 
 app.use(express.static("public"));
 app.use(xssFilter({ setOnOldIE: true }));
-app.use(csp({
+/*app.use(csp({
     directives: {
         defaultSrc: ["'self'"],
         styleSrc: ["'self'", 'maxcdn.bootstrapcdn.com']
     }
-}));
+}));*/
 app.use(noSniff());
 app.set("view engine", "ejs");
 app.set('views', __dirname + '/view');
