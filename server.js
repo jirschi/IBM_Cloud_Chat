@@ -24,10 +24,6 @@ var xssFilter = require('x-xss-protection');
 //var csp = require('helmet-csp');
 var noSniff = require('dont-sniff-mimetype');
 const csurf = require('csurf');
-const cookieParser = require('cookie-parser');
-const csrfMiddleware = csurf({
-    cookie: true
-});
 
 var languageTranslator = new LanguageTranslatorV2({
     username: 'd8d339f0-f1e3-48d3-a769-f9a1fee0bccd',
@@ -46,12 +42,9 @@ app.use(xssFilter({ setOnOldIE: true }));
     }
 }));*/
 app.use(noSniff());
-app.use(cookieParser());
-app.use(csrfMiddleware);
 
 app.set("view engine", "ejs");
 app.set('views', __dirname + '/view');
-
 
 //Enforce HTTPS
 app.enable('trust proxy');
@@ -84,8 +77,19 @@ app.use(session({
     secret: 'SuperSecretPassword!',
     store: sessionStore,
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: true,
+    cookie: {
+        httpOnly: true,
+        secure: true
+    }
 }));
+
+app.use(csurf());
+
+app.use(function (req, res, next) {
+    res.locals._csrf = req.csrfToken();
+    next();
+});
 
 //body parser
 app.use(bodyParser.json({ limit: '50mb' }));
