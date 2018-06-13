@@ -38,12 +38,14 @@ app.use(xssFilter({ setOnOldIE: true }));
 
 var scriptSources = ["'self'", "'unsafe-inline'", "'unsafe-eval'", "ajax.googleapis.com", "code.jquery.com", 'maxcdn.bootstrapcdn.com'];
 var styleSources = ["'self'", "'unsafe-inline'", "ajax.googleapis.com", 'maxcdn.bootstrapcdn.com'];
+var fontSources = ["'self'", 'maxcdn.bootstrapcdn.com'];
 
 app.use(csp({
     directives: {
         defaultSrc: ["'self'"],
         scriptSrc: scriptSources,
-        styleSrc: styleSources
+        styleSrc: styleSources,
+        fontSrc: fontSources
     }
 }));
 app.use(noSniff());
