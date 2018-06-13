@@ -70,7 +70,7 @@ $(function () {
         globalUserList = data;
         $('.userList').empty();
         $.each(data, function (i, v) {
-            $('.userList').append('<div class="row"><div class="col-md-4"><img src="' + v.image + '" alt="" class="rounded-circle" height="52" width="52"/></div><div class="col-md-8 namelink nameInList" value="' + v.username + '">' + v.username + '</div></div>');
+            $('.userList').append('<div class="row"><div class="col-md-4"><img src="' + v.image + '" alt="" class="img-circle" height="52" width="52"/></div><div class="col-md-8 namelink nameInList" value="' + v.username + '">' + v.username + '</div></div>');
         });
     });
 
@@ -156,9 +156,9 @@ function nameLink(name) {
 //Function to append message to chat-div
 function addPost(text, sender, date, styleClass, rowClass) {
     if (rowClass === "response") {
-        $('#history').append($('<div class="row message ' + rowClass + '"><div class="col-md-11"><p class="' + styleClass + '">' + text + '</p> <div class="clearfix"></div><small class="text-muted">' + nameLink(sender) + ', ' + date + '</small><div class="clearfix"></div></div><div class="col-md-1"><img src="' + findImageForUser(sender) + '" alt="" class="rounded-circle" width="52" height="52"></div></div >'));
+        $('#history').append($('<div class="row message ' + rowClass + '"><div class="col-md-11"><p class="' + styleClass + '">' + text + '</p> <div class="clearfix"></div><small class="text-muted">' + nameLink(sender) + ', ' + date + '</small><div class="clearfix"></div></div><div class="col-md-1"><img src="' + findImageForUser(sender) + '" alt="" class="img-circle" width="52" height="52"></div></div >'));
     } else {
-        $('#history').append($('<div class="row message ' + rowClass + '"><div class="col-md-1"><img src="' + findImageForUser(sender) + '" alt="" class="rounded-circle" width="52" height="52"></div><div class="col-md-11"><p class="' + styleClass + '">' + text + '</p> <div class="clearfix"></div><small class="text-muted">' + nameLink(sender) + ', ' + date + '</small><div class="clearfix"></div></div></div >'));
+        $('#history').append($('<div class="row message ' + rowClass + '"><div class="col-md-1"><img src="' + findImageForUser(sender) + '" alt="" class="img-circle" width="52" height="52"></div><div class="col-md-11"><p class="' + styleClass + '">' + text + '</p> <div class="clearfix"></div><small class="text-muted">' + nameLink(sender) + ', ' + date + '</small><div class="clearfix"></div></div></div >'));
     }
     $(".namelink").click(function () {
         autoWhisper($(this).attr("value"));
