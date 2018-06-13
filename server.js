@@ -40,13 +40,16 @@ var scriptSources = ["'self'", "'unsafe-inline'", "'unsafe-eval'", "ajax.googlea
 var styleSources = ["'self'", "'unsafe-inline'", "ajax.googleapis.com", 'maxcdn.bootstrapcdn.com'];
 var fontSources = ["'self'", 'maxcdn.bootstrapcdn.com'];
 var connectSources = ['wss://mystifying-jang.eu-de.mybluemix.net', 'https://mystifying-jang.eu-de.mybluemix.net/', 'mystifying-jang.eu-de.mybluemix.net/']
+var imgSources = ['data:image/png;base64', 'data:image/jpg;base64', 'data:image']
+
 app.use(csp({
     directives: {
         defaultSrc: ["'self'"],
         scriptSrc: scriptSources,
         styleSrc: styleSources,
         fontSrc: fontSources,
-        connectSrc: connectSources
+        connectSrc: connectSources,
+        imgSrc: imgSources
     }
 }));
 app.use(noSniff());
