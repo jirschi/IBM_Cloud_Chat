@@ -22,7 +22,7 @@ var mysql = require('mysql');
 var formidable = require('formidable');
 var xssFilter = require('x-xss-protection');
 //var csp = require('helmet-csp');
-//var noSniff = require('dont-sniff-mimetype');
+var noSniff = require('dont-sniff-mimetype');
 
 var languageTranslator = new LanguageTranslatorV2({
     username: 'd8d339f0-f1e3-48d3-a769-f9a1fee0bccd',
@@ -38,7 +38,7 @@ app.use(xssFilter({ setOnOldIE: true }));
         styleSrc: ["'self'", 'maxcdn.bootstrapcdn.com']
     }
 }));*/
-//app.use(noSniff());
+app.use(noSniff());
 app.set("view engine", "ejs");
 app.set('views', __dirname + '/view');
 
