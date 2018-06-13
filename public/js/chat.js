@@ -28,7 +28,6 @@ $(function () {
 
     //Send messages to Server as JSON with username message and file
     $('#chatForm').submit(function () {
-        console.log("cookie used: " + _csrf);
         var m = $('#m').val();
         if (m.includes("<") || m.includes("&lt;")) {
             if (m.includes("<")) {

@@ -77,19 +77,8 @@ app.use(session({
     secret: 'SuperSecretPassword!',
     store: sessionStore,
     resave: false,
-    saveUninitialized: true,
-    cookie: {
-        httpOnly: true,
-        secure: true
-    }
+    saveUninitialized: true
 }));
-
-app.use(csurf());
-
-app.use(function (req, res, next) {
-    res.locals._csrf = req.csrfToken();
-    next();
-});
 
 //body parser
 app.use(bodyParser.json({ limit: '50mb' }));
@@ -125,8 +114,7 @@ app.get('/chat', function (req, res) {
             console.log('[SERVER] forwarding user: ' + req.session.passport.user.user + ' to chat with language: ' + req.session.passport.user.language);
             res.render('index', {
                 username: req.session.passport.user.user,
-                language: req.session.passport.user.language,
-                cookie: req.csrfToken()
+                language: req.session.passport.user.language
             });
         }
     } else {
