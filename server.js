@@ -23,12 +23,19 @@ var formidable = require('formidable');
 var xssFilter = require('x-xss-protection');
 //var csp = require('helmet-csp');
 var noSniff = require('dont-sniff-mimetype');
+const csurf = require('csurf');
+const cookieParser = require('cookie-parser');
+const csrfMiddleware = csurf({
+    cookie: true
+});
 
 var languageTranslator = new LanguageTranslatorV2({
     username: 'd8d339f0-f1e3-48d3-a769-f9a1fee0bccd',
     password: 'dnnMTWUcNFW4',
     url: 'https://gateway-fra.watsonplatform.net/language-translator/api'
 });
+
+
 
 app.use(express.static("public"));
 app.use(xssFilter({ setOnOldIE: true }));
@@ -39,6 +46,9 @@ app.use(xssFilter({ setOnOldIE: true }));
     }
 }));*/
 app.use(noSniff());
+app.use(cookieParser());
+app.use(csrfMiddleware);
+
 app.set("view engine", "ejs");
 app.set('views', __dirname + '/view');
 
@@ -111,7 +121,8 @@ app.get('/chat', function (req, res) {
             console.log('[SERVER] forwarding user: ' + req.session.passport.user.user + ' to chat with language: ' + req.session.passport.user.language);
             res.render('index', {
                 username: req.session.passport.user.user,
-                language: req.session.passport.user.language
+                language: req.session.passport.user.language,
+                cookie: req.csrfToken()
             });
         }
     } else {

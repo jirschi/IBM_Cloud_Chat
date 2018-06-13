@@ -10,6 +10,8 @@ $(function () {
         "username": username,
         "language": language
     };
+    $('#cookie_id').attr('value', 'cookie');
+
     socket.emit('send-nickname', user);
 
     socket.on('connection ready', function (callback) {
@@ -27,6 +29,7 @@ $(function () {
 
     //Send messages to Server as JSON with username message and file
     $('#chatForm').submit(function () {
+        console.log("cookie used: " + cookie);
         var m = $('#m').val();
         if (m.includes("<") || m.includes("&lt;")) {
             if (m.includes("<")) {
