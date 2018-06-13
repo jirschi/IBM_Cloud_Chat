@@ -45,7 +45,8 @@ app.use(csp({
         defaultSrc: ["'self'"],
         scriptSrc: scriptSources,
         styleSrc: styleSources,
-        fontSrc: fontSources
+        fontSrc: fontSources,
+        connectSrc: ['wss://mystifying-jang.eu-de.mybluemix.net']
     }
 }));
 app.use(noSniff());
